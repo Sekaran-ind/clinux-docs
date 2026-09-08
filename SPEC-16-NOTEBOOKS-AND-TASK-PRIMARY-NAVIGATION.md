@@ -10,13 +10,14 @@ SPEC-13 §3 mapped `chatThreads.js`'s existing shape (`category` + optional `enc
 
 ## 3. Notebook: the container between "whole tree" and "one Task"
 
-A notebook is anchored to a `PlanDefinition` instance, identified by an anchor-id. Three notebook types, matching what's already been established in this design line:
+A notebook is anchored to a `PlanDefinition` instance, identified by an anchor-id. Four notebook types, matching what's already been established in this design line:
 
 | Notebook type | Anchor-id | Lifecycle | Subtasks |
 |---|---|---|---|
 | Facility | the facility itself | singleton, perpetual | initial onboarding + later updates (e.g. replacing SPEC-14 §7's demo LGD codes with real ones) |
 | Encounter | encounter-id | one per patient visit, completes when Checkout does | Front-Desk, Consultation-Desk, Checkout Tasks (SPEC-13 §2.1's `relatedAction` sequence) |
 | Affiliation/Roster | a specific Practitioner-Facility or Facility-Facility relationship | perpetual for that relationship's lifetime | registration, credentialing changes, eventual offboarding — the roster-lifecycle machines, structurally different in shape from an Encounter's process/pipeline machine |
+| EpisodeOfCare | the episode itself (`EpisodeOfCare.diagnosis.condition` — the specific condition being longitudinally managed, e.g. a high-risk pregnancy, a rehab program) | bounded but long-running — spans multiple Encounters, ends when the condition/program does, not perpetual like Affiliation/Roster and not single-visit-bounded like Encounter | the individual Encounter notebooks it groups (`Encounter.episodeOfCare`, real FHIR field), plus a governing `CarePlan` (goals/interventions/meds/nutrition) — the CarePlan is the one subtask here NOT anchored to a PlanDefinition the way the other three notebook types' own workflows are: it's patient-specific content, though `CarePlan.instantiatesCanonical` CAN reference a PlanDefinition-authored protocol template the same SPEC-18 pipeline produces (see SPEC-23 §4 for the full reasoning, including why EpisodeOfCare→CarePlan isn't a direct FHIR field — the real link is via shared Condition/Patient) |
 
 ## 4. Untethered chat is ephemeral, deliberately outside the notebook structure
 
@@ -38,6 +39,7 @@ Confirms `docs/SPEC-15-CUBO-UNIFIED-INTERACTION-SURFACE.md` §3's left pane is a
 - `docs/SPEC-13-FHIR-WORKFLOW-DOCUMENTS-AND-CONFORMANCE.md` §2 — this spec's Task-primary model depends on `Task`/`PlanDefinition` actually being built; not done yet. §3 is superseded by this spec.
 - `docs/SPEC-15-CUBO-UNIFIED-INTERACTION-SURFACE.md` — the left pane's UI; this spec is the data model underneath it.
 - `docs/SPEC-18-PLANDEFINITION-AUTHORING-VIA-YAML-PIPELINE.md` — answers this spec's §6 step 1 for `PlanDefinition` specifically; `Task` persistence is still this spec's own open item.
+- `docs/SPEC-23-SPECIALITY-ROOM-AND-FIXED-ORCHESTRATION-ANCHORS.md` §4 — the EpisodeOfCare notebook type added to §3's table above; also names a second, independent reason (affiliate-fulfilled services) `Task` persistence is needed, beyond this spec's own Notebook motivation.
 
 ## 8. Open items
 
