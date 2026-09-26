@@ -1,73 +1,99 @@
 # Pending Work — ClinuxFlow
 
-Snapshot taken 2026-09-26, when the workspaces moved off the MacBook to the Mac Mini + Windows PC.
-All four repos (clinux-frontend, clinuxflow-api, clinuxflow-abdm-gateway, clinux-docs) were
-committed and pushed to `main` at that point. Test state at handoff: clinux-frontend 351/351,
-clinuxflow-api 383/383, clinuxflow-abdm-gateway 15/15.
+First written 2026-09-26, when the workspaces moved off the MacBook to the Mac Mini + Windows PC.
+Revised the same day after a full spec-versus-code review (see `SPEC-00-INDEX.md`). Test state at
+that point: clinux-frontend 351/351, clinuxflow-api 383/383, clinuxflow-abdm-gateway 15/15.
 
-Update this file as items close. One feature per machine, each on its own branch — see
+Update this file as items close. One feature per machine, each on its own branch; see
 "Working across machines" at the bottom.
 
 ---
 
-## 1. Open build items (started, not finished)
+## 0. Security: fix before any clinic uses the system
+
+Found in the 2026-09-26 review. Details and fix sketches in SPEC-01 §10. BLOG-04 must not be
+published until these are closed.
+
+| # | Issue | Where | Severity |
+|---|---|---|---|
+| S1 | **Cross-tenant reads and writes by id.** `GET/PUT /api/encounters/:id`, `GET/PUT /api/tasks/:planId/snapshot` and `GET /api/tasks/:planId/audit` look up by id with no `clinic_id` condition; upserts overwrite `clinic_id`. `resource_records` upsert also reassigns `clinic_id` (its reads are scoped). Encounter ids are `rec-<timestamp>-<5 chars>`. | clinuxflow-api `src/lib/runtime/{encounter-coordination-db,task-db}.js`, `src/lib/control/resource-records-db.js`, `src/routes/runtime.js` | High (clinical data) |
+| S2 | **Encounter video join has no clinic check** and no paid gate: any signed-in account that knows an encounter id gets a RealtimeKit token for that consultation. | `POST /api/realtime/join` | High |
+| S3 | **ABDM gateway has no per-user auth or rate limiting.** Its only gate is `X-Service-Key`, which ships in the frontend bundle; `config.js` claims rate limiting that doesn't exist. OTP endpoints are abusable. | clinuxflow-abdm-gateway `src/index.js`, `src/lib/serviceAuth.js`; clinux-frontend `src/config.js` | High |
+| S4 | Sessions can't be revoked (7-day JWT, no status re-check) and are stored in localStorage. | clinuxflow-api `userAuth.js`, `session.js`; clinux-frontend `config.js`, `stores/auth.js` | Medium |
+| S5 | Staff created via join token get role `hospital_admin` (`createTeammateAccount` never sets `role`). | clinuxflow-api `accounts-db.js`, `control.js` redeem | Medium |
+| S6 | `POST /api/facility/affiliates` still accepts writes with no client caller (SPEC-26 says it was retired). | clinuxflow-api `control.js` | Low–medium |
+| S7 | No record-level `AuditEvent`s (reads and edits aren't logged). | both | Medium (compliance) |
+| S8 | On-device data not encrypted at rest. | clinux-frontend | Medium |
+| S9 | HFR registration is not tier-gated, contrary to SPEC-05 policy. Decide: enforce, or change the policy. | gateway / frontend | Policy |
+
+After S1, audit every `*-db.js` accessor for the same "lookup by id without tenant" pattern and
+add a cross-tenant test per endpoint.
+
+## 1. Open build items
 
 | Area | What's left | Repo(s) | Spec |
 |---|---|---|---|
-| Patient Registration journey | Patient GraphDefinition + PatientHome.vue exist; the full Patient Registration journey on the SPEC-23 FHIR-native onboarding pattern is the next un-started piece | frontend, api | SPEC-23/24 |
-| `Patient.telecom:mobile` slicing gap | Known-deferred: makes `valid:true` unreachable for any real patient (same gap as `identifier:abhaNumber`). `/api/resources/:type/save` deliberately doesn't gate on validity until fixed | api | SPEC-24 |
-| Generic `resource_records` migration | Registry is designed for it; Facility / Provider / Affiliate* still use their own hand-copied routes + tables | api | — |
-| Designer "Include cloud records" toggle | Optional nice-to-have from the PatientHome plan | frontend | — |
-| CustomFormHost retirement (Tier B) | Remaining LForms/CustomFormHost surfaces not yet moved to the schema-driven hosts | frontend | SPEC-24 |
-| Cübo mobile-nav retrofit | AdaptiveSectionNav pattern not yet applied inside Cübo | frontend | SPEC-24 |
-| ABHA certificate endpoint 404 | `abhasbx.abdm.gov.in/abha/api/v3/profile/public/certificate` returns 404 on the current sandbox; blocks every ABHA route that encrypts (enrolment, login, find). Confirm the current endpoint with a newer ABHA doc or ABDM support | abdm-gateway | — |
-| HPR `/api/v1/auth/cert` response shape | Still an open TODO in `encryption.js` — unverified against a real sandbox response | abdm-gateway | — |
-| SPEC-26 join tokens | Cübo browser E2E not run; Cloudflare Queue not actually provisioned | frontend, api | SPEC-26 |
-| SPEC-22 decision 1 | Persisted Task records is the one large remaining item of the four decisions (SPEC-25 covers part of the persistence layer) | api, frontend | SPEC-22/25 |
-| SPEC-22 room model | 5-static-room model found not to scale; replace with SPEC-23 Speciality Room (catalog-driven) | frontend | SPEC-23 |
-| SPEC-21 role-based next action | Built for register/login; UI wiring for the wider PlanDefinition runtime still open | frontend | SPEC-13/21 |
-| SPEC-19 §5+ | Conflict sandbox + Federation Actor — design only | — | SPEC-19 |
-| SPEC-09 Hospital-side flow | Staff side done; Hospital-side ABDM-anchored flow still open | frontend | SPEC-09 |
-| SPEC-08 phase 1 | Content pre-build batch still open | api | SPEC-08 |
+| Outpatient visit as a PlanDefinition | Front Desk → Consultation → Checkout runs on `encounter_status` and stage locks; no Tasks per station, no worklist, no "next station ready" | frontend, api | SPEC-04 §4, SPEC-13, SPEC-23 §9 |
+| `ContactPoint.system` never captured | Makes `Patient.telecom:mobile` (and similar slices) unreachable, so `valid:true` is impossible for real patients | api (YAML), frontend (hosts) | SPEC-13 §5.3 |
+| SDC-canonical `definition` URLs | Compiler emits `http://hl7.org/<Type>#path`; SDC expects `.../fhir/StructureDefinition/<Type>#...`; rebuild system forms after | api | SPEC-02 §4 |
+| Specialty catalog in three places | YAML choices, `ServicesHost.vue` copy, `clinic-specialities.json` | api, frontend | SPEC-23 §3.2 |
+| Generic `resource_records` migration | Facility / Provider / Affiliate still on their own routes | api | SPEC-24 §7 |
+| Designer "Include cloud records" toggle | Optional | frontend | SPEC-24 |
+| Cübo mobile-nav retrofit onto `AdaptiveSectionNav` | Not done | frontend | SPEC-24 §7 step 8 |
+| ABHA certificate endpoint 404 | Blocks every ABHA route that encrypts; confirm the current endpoint with ABDM | abdm-gateway | SPEC-11 §4 |
+| HPR `/api/v1/auth/cert` response shape | Unverified TODO in `encryption.js` | abdm-gateway | — |
+| SPEC-26 join tokens | Two-browser UI walkthrough of the Cübo approval card not done; Worker not deployed with the queue consumer (the queue itself is provisioned) | frontend, api | SPEC-26 §11 |
+| Personal worklist (SPEC-22 D1) | Persistence built (SPEC-25); per-action Task records and the worklist UI not built | frontend, api | SPEC-22 §2 |
+| Wikidata specialty tagging at onboarding | Regressed in the SPEC-24 rebuild; re-add to `ProviderBasicsHost.vue` | frontend | SPEC-06 §6 |
+| SPEC-08 phase 1 content batch | Not run | api | SPEC-08 |
+| Conflict detection and resolution UI, Federation Actor | Design only | frontend | SPEC-19 §5–§8 |
+| Composition attestation and CapabilityStatement | Not built | api | SPEC-13 §5.4, §6.4 |
 | Mobile/sync/video roadmap | Production secrets not yet deployed | api, gateway | — |
 
-## 2. Known bugs (not yet fixed)
+## 2. Known bugs
 
-- **LForms coded-field data loss** — coded/autocomplete LForms fields drop a typed value unless a
-  dropdown suggestion is clicked before save. Confirmed live. Shrinks as LForms surfaces are retired.
-- **SPEC-12 capture-surface defects** — duplicate, unreconciled Hospital Profile form.
+- The LHC-Forms coded-field data-loss bug is fixed (the `useSystemForms.js` focusout capture).
+- The duplicate Hospital Profile surface is resolved (SPEC-12 §3).
+- Open items are the security list above and the `ContactPoint.system` gap.
 
-## 3. Specs written, not started
+## 3. Designed, not started
 
 | Spec | Topic |
 |---|---|
-| SPEC-06 | Cübo agentic harness: multi-intent classification, semantic layer, unified inbox, agentic dispatch |
-| SPEC-07 | SNOMED clinical chat (Parts A/B/C incl. nano-DC on owned hardware) |
-| SPEC-10 | e-Sushrut gap list: IPD, lab orders, reporting, SMS/notifications, pharmacy inventory — no roadmap decided |
-| SPEC-12 | Rooms as bounded-context Questionnaire/Response documents |
-| SPEC-13 | Workflow/Documents/Conformance: extraction hardening, `requirements` CapabilityStatement |
-| SPEC-15/16/17 | Cübo-central 3-pane surface, notebooks + Task-primary navigation, TanStack AI layer |
-| SPEC-23 | EpisodeOfCare/CarePlan as a 4th notebook type; Encounter state machine (Register→Triage→Consult→SOAP→Checkout) |
+| SPEC-06 / 08 | Multi-intent, dispatch registry, group chat, unified inbox, enterprise embeddings |
+| SPEC-07 | SNOMED clinical chat (subsets, CDS rules, nano-DC models) |
+| SPEC-10 | e-Sushrut gaps: IPD, lab orders, MIS reporting, SMS/notifications, pharmacy stock (no roadmap decided) |
+| SPEC-11 §6 | M4 / NHCX claims |
+| SPEC-12 §4.2–§4.4 | Bounded-context scope stack, shared resolution component, outcome metrics |
+| SPEC-15 §4–§7 | Markdown rendering, section cards, formal pop-out, retiring slot matching |
+| SPEC-16 | Notebooks and Task-primary navigation |
+| SPEC-17 | TanStack AI conversation layer |
+| SPEC-21 §4 | Tier lifecycle (trial/suspend/discontinue), unified storage state |
+| SPEC-23 | Speciality Rooms, `definitionCanonical` composition, EpisodeOfCare/CarePlan |
+| BLOG-07 | Grammar-constrained local extraction (design written as a blog post) |
 
 ## 4. Parked / deferred by decision
 
 - rendering-xhtml rich-text YAML field (compiler backlog).
-- LForms data sharing / sync (AES-GCM key scheme in `main.js` is parked WIP, not dead code).
-- NIST ZTA physical service split — module boundary done; physical split waits for a forcing function.
-- TanStack Query + GraphQL — evaluated, not adopting (no CRUD API for clinical data yet).
-- Any Patient-authenticated surface — out of scope (Patient has no login, SPEC-21 §6).
+- LForms data sharing / sync (the AES-GCM key scheme once in `main.js` was superseded by `sessionTransfer.js`).
+- NIST ZTA physical service split: module boundary done; the physical split waits for a forcing function.
+- TanStack Query + GraphQL: evaluated, not adopting broadly.
+- Any Patient-authenticated surface: out of scope (Patient has no login, SPEC-21 §6).
 
 ## 5. Pull requests
 
-No open PRs in any repo as of this snapshot (checked with `gh pr list`). Several Claude memory
-notes still say "PR #N (not merged)"; those are stale.
+No open PRs in any repo as of 2026-09-26 (checked with `gh pr list`). Memory notes that say
+"PR #N (not merged)" are stale.
 
 ## 6. Housekeeping
 
-- `clinux-frontend/idb-race-repro.mjs` — debug repro for the SPEC-25 IndexedDB resumability race.
-  Committed so it isn't lost; move under `scripts/` or delete when no longer useful.
+- Dead code to delete: `clinux-frontend/src/pages/AiEngine.vue` (unrouted), `sliceQuestionnaireGroup`
+  (no caller), `clinuxflow-api/src/lib/runtime/runtime-scribe-engine.js` (never imported; see SPEC-03 §5).
+- `clinux-frontend/CLAUDE.md` is stale: it says every collection is localStorage, that `main.js`
+  preloads every collection before mount, and that ABDM lives on `/onboarding-abdm`.
+- `clinux-frontend/idb-race-repro.mjs`: debug repro for the SPEC-25 race; move under `scripts/` or delete.
 - `docs/abdm-fhir-data-xchange/` holds both `definitions.json.zip` and its extracted folder
-  (~71 MB together) — keep one.
+  (~71 MB together); keep one.
 
 ---
 

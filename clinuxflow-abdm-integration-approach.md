@@ -1,5 +1,11 @@
 
-# ClinuxFlow – ABDM Integration Approach (Design Phase)
+# ClinuxFlow – ABDM Integration Approach
+
+| | |
+|---|---|
+| **Status** | Original design (2025), largely implemented. Phases 0–3 below are built against the ABDM sandbox as `clinuxflow-abdm-gateway` (session-token and transaction Durable Objects, per-transaction RSA encryption, master-data routes, ABHA/HPR/HFR route sets) and the frontend panels listed in SPEC-05 §9. Phases 4–5 (certification, production) are not started. |
+| **Last reviewed** | 2026-09-26 |
+| **Differences from this design** | (1) The gateway is authenticated only by a shared key that ships in the frontend bundle, with no per-user check and no rate limiting; the "only component allowed to hold ABDM credentials" property holds, but the gateway itself is callable by anyone who extracts the key (SPEC-01 §10). (2) No request/response audit log exists yet (§3's "audit/compliance log"). (3) The ABHA certificate endpoint returns 404 on the current sandbox, blocking ABHA flows that encrypt. (4) `abdmCompliantSoftware` is sent with `existingSoftwares: []` and a free-text `anyOther`, because ClinuxFlow is not yet on NHA's certified software list. |
 
 **Scope:** ABHA (patient identity), HPR (health professional registry), HFR (health facility registry) — based on the ABDM ABHA V3 Integrator Guide and NHPR Sandbox API docs supplied. HIP/HIU consent-manager and FHIR health-record exchange are intentionally out of scope for this document, since specs for those weren't part of this review, and should be scoped separately once ClinuxFlow's data-exchange requirements are firmed up.
 

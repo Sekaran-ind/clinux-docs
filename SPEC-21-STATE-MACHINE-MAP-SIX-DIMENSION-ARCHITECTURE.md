@@ -1,79 +1,88 @@
-# Specification 21: The Six-Dimension State Machine Map — Real State vs. Gaps, Parallel vs. Nested
+# SPEC-21: The Six-Dimension State Map: Parallel, Not Nested
 
-## 1. Objective
+| | |
+|---|---|
+| **Status** | Reference and decision record. §5 (role-based next action) is built. The tier lifecycle, unified storage state and journey routing (§4) are not. |
+| **Last reviewed** | 2026-09-26 |
+| **Code (for §5)** | `clinux-frontend/src/workflow/{planDefinitionRunner,workflowRuntime}.js` (`result_<actionId>`, `onActionDone`), `src/stores/entryWorkflow.js` (`onRoleKnown`), `src/workflow/onboardingJourneys.js`, `src/components/Cubo.vue` |
+| **Related** | SPEC-05, SPEC-16, SPEC-19 §5, SPEC-20, SPEC-23 |
 
-Ground the user-provided "ClinuX: State Machine Map" (App Tier → Storage → Auth Stage → ABDM Status → Journey → Actors, drawn as six nested boxes) against what's actually built, verified, and specced today, then give a real structural recommendation for composing the six dimensions — not a restatement of the diagram. Nothing beyond §5's recommendation is built yet.
+## 1. Purpose
 
-## 2. Per-dimension reality check
+Check a proposed "state machine map" (App Tier → Storage → Auth Stage → ABDM Status → Journey →
+Actors, drawn as six nested boxes) against the real code, and recommend how the dimensions should
+actually compose.
 
-Checked directly against the real schema/code, not assumed:
+## 2. Each dimension against the code
 
-| Dimension | Diagram's values | Real state today |
+| Dimension | Proposed values | Reality |
 |---|---|---|
-| **Auth Stage** | Public \| Authenticated | **Real, tested, working code** — `ENTRY_PLAN_DEFINITION` (SPEC-20), live-verified, including the two bugs found and fixed this session (multi-instance hijack, non-repeatable `done`). This is the one dimension actually proven. |
-| **ABDM Status** | Unregistered \| Registered | **Partially real.** SPEC-11's HFR/HPR *self-service prerequisite* flow is shipped and live-verified (17/17 checks) — but that memory itself flags DigiLocker as explicitly **not** a substitute for the real ABDM M2/M3 certification milestones. "Registered" in this diagram is ambiguous between "completed our self-service form" and "actually certified by ABDM" — a real distinction, not pedantry, since only the second one is true ABDM registration. |
-| **App Tier** | Free \| Trial \| Paid \| Suspend \| Discontinue | **Two of five values exist.** `clinics.tier CHECK (tier IN ('free', 'paid'))` (migration 0003) — `requirePaidTier()` gating is real and shipped (SPEC-05). Trial/Suspend/Discontinue don't exist anywhere — no schema column state, no lifecycle logic, no expiry/grace-period handling. |
-| **Storage** | Local \| Server \| Cloud \| Private-DC | **Real mechanisms, never unified into one state.** Local+Server exists (SPEC-19 §4's IndexedDB work, the Tauri LAN shared-server sync). Cloud maps to the paid-tier D1/Workers backend. Private-DC maps to SPEC-07 Part C's nano-DC vision (Cloudflare Tunnel, dedicated gateway) — specced, not built. These are three separate mechanisms today, not one queryable "storage mode" state. |
-| **Journey** | General \| Onboarding \| Consultation \| Service Desk | **Exists as a different, flatter shape.** `chatThreads.js`'s `category` field (`general`/`front-desk`/`encounter`/`billing`/`ai-engine`/`abdm-facility`/`abdm-patient`) is real and shipped, but it's a static per-page prop, not the machine-context-driven routing this diagram implies. Confirmed two exchanges ago: this is precisely SPEC-16 §5's already-pending design (Task/notebook-anchor-driven routing), gated on Task persistence, which remains open. |
-| **Actors** | Hospital-Admin \| Provider \| Patient | **Two of three exist, and only as staff.** `accounts.role CHECK (role IN ('hospital_admin', 'health_professional', 'admin_and_health_professional'))` (migration 0008) — "Provider" maps to `health_professional`. **`Patient` does not exist as an actor anywhere** — the `accounts` table is staff-only; a Patient today is exclusively a FHIR data subject (captured via forms), never an authenticated party with their own login/session. This is the diagram's biggest real gap, not a small one. |
+| Auth stage | Public / Authenticated | Real and tested: the entry plan (SPEC-20). |
+| ABDM status | Unregistered / Registered | Partly real. HFR/HPR/ABHA registration works in the sandbox; "registered" must not be confused with ABDM M2/M3 certification, which does not exist. |
+| App tier | Free / Trial / Paid / Suspend / Discontinue | Two of five: `clinics.tier IN ('free','paid')`. |
+| Storage | Local / Server / Cloud / Private-DC | Separate mechanisms (local collections, LAN server, D1 mirrors; the nano-DC is design). Nothing lets the app ask "which storage mode am I in". |
+| Journey | General / Onboarding / Consultation / Service Desk | Cübo's `category` field (`general`, `encounter`, `front-desk`, `billing`, `patient-directory`, `abdm-facility`, `abdm-patient`, `ai-engine`), chosen by each page's prop, not by state. |
+| Actors | Hospital admin / Provider / Patient | Staff roles only. **Patient is not an actor** (see §6). |
 
-## 3. Structural critique: mostly parallel, not nested
+## 3. Mostly parallel, not nested
 
-The diagram draws six literal nested boxes — worth pushing back on as a literal implementation shape, not just visually. Checking each adjacent pair for a *real* containment relationship versus an independent one:
+- Auth → ABDM status: genuinely nested (no ABDM status before authentication).
+- Auth → Journey: mostly nested, except `general`, which spans both.
+- Journey → Actor: not nested. Role is a stable property of the session, not of the journey.
+- Tier → Storage: a **constraint** (tier limits which storage modes are allowed), not containment.
+- Tier as the outermost box: wrong. A suspended clinic's users are still signed in and mid-journey,
+  just blocked from paid actions.
 
-- **Auth Stage → ABDM Status**: genuinely hierarchical. ABDM Status only meaningfully exists once Authenticated — there's no such thing as an unauthenticated visitor's ABDM registration state. Correct as nesting.
-- **Auth Stage → Journey**: hierarchical, but not uniformly — `general` is explicitly the one category that spans both Public and Authenticated (SPEC-20's whole build lives here), while Onboarding/Consultation/Service Desk are Authenticated-only. A clean nested box overstates this; `general` is the deliberate exception.
-- **Journey → Actors**: not really nested. Which actor you are doesn't change because you switched journeys — role is a stable property of the authenticated session, established once at login, not re-derived per journey. Actors belongs as a sibling of Journey (both children of Authenticated), not a child of Journey.
-- **App Tier → Storage**: not containment, a **constraint**. Free tier limits which storage modes are legal (local/LAN only); paid unlocks cloud. That's a guard relationship between two independent dimensions, not App Tier containing Storage — a suspended clinic doesn't lose its Storage *state*, it loses *permission* to act while in whatever state it's in.
-- **App Tier as the outermost box at all**: tier changes (upgrade, payment failure → suspend) don't reset or restructure Auth Stage/Journey/Actors — a suspended clinic's users are still authenticated, still mid-journey, just newly gated from paid actions. Modeling Tier as the *container* everything else lives inside overstates its relationship to the rest; it's better modeled as its own independent lifecycle running alongside everything else.
+**Recommendation**: one parallel top-level machine, `tier × storage × authStage`, with ABDM status
+and journey and actor as sub-states inside `authenticated`. This extends SPEC-19 §5's
+`mode × connectivity × interaction` pattern. Not built.
 
-**Recommendation**: one parallel (orthogonal) top-level machine — `tier` × `storage` × `authStage` — with `abdmStatus` and `journey`/`actor` as compound sub-states living specifically inside `authStage: authenticated`, not as further nested boxes at the top level. This is the exact `mode × connectivity × interaction` parallel-region shape SPEC-19 §5 already committed to for a simpler case (Local/Server vs. Federated) — extending that already-decided pattern, not inventing a new one.
+## 4. Genuinely new work (not built)
 
-## 4. What's genuinely new work, not a small addition
+- **Tier lifecycle**: trial expiry, suspension grace, what happens to a suspended clinic's data,
+  and discontinue with export and delete. A schema and business logic, not new enum values.
+- **A unified storage state**: a thin layer that answers "which mode am I in" over the existing
+  mechanisms.
+- **State-driven journey routing**: Cübo's active thread chosen from real Task state (SPEC-16 §5).
 
-- **Patient as an authenticated actor** — a real, separate initiative, not a fourth CHECK-constraint value bolted onto `accounts.role`. A patient's data-access model is fundamentally different (see only their own records, never a clinic's full dataset) — this needs its own design pass (a patient-scoped account type, a different authorization boundary entirely from `requireUser()`'s current clinic-wide model), not a quick schema patch.
-- **Trial/Suspend/Discontinue tier lifecycle** — real business logic: trial-expiry timing, a suspend grace period, what happens to a suspended clinic's already-stored data, a discontinue/export-and-delete flow. Schema + lifecycle, not just new enum values.
-- **A unified Storage state** — SPEC-05 + SPEC-19 + SPEC-07 Part C already cover the three real mechanisms; the gap is that nothing today lets the app *ask* "what storage mode am I in" as one coherent state. Worth building as a thin unification, not new storage mechanics.
+## 5. Role-based next action (built)
 
-## 5. Recommendation: what to build next
+- `planDefinitionRunner.js` keeps an invoked service's result as `result_<actionId>`, read with
+  `actionResult()`.
+- `workflowRuntime.js` exposes `onActionDone(planId, actionId, cb)`, the cross-plan trigger
+  SPEC-13 §9 lacked. It fires every time, including for repeatable actions.
+- `entryWorkflow.js` exposes `onRoleKnown(cb)`, wired to both `register` and `login`, reading
+  `role` from the real account returned by the API.
+- Cübo, in the general/entry context, posts a navigation-suggestion message with the journeys for
+  that role, taken from `ONBOARDING_JOURNEYS`: `hospital_admin` → Register Your Facility
+  (`/onboarding`); `health_professional` → Add My Details (`/practitioner-home`);
+  `admin_and_health_professional` → both. The same list drives the Next Action tab.
+- `role-equals` was added to the condition-type catalog for the declarative side (SPEC-18 §7
+  step 4). Nothing evaluates it.
+- Found along the way: tests sharing the real `taskActorSnapshots` collection leaked a `done`
+  snapshot between tests; fixed by clearing it in `beforeEach`.
 
-Given Auth Stage is now the one proven, tested pattern (two real bugs found and fixed this session), the highest-leverage next step is the one already named as pending before this session's detour into AI Engine/GetStarted: **role-based next-action triggering** — `login` already returns `role` (SPEC-13/`clinux-planDefinition-runtime-built`'s own "designed precisely, not yet built" item). This is simultaneously: the direct continuation of already-planned work, the concrete first instance of "Actors" as a real dimension, and the join point that makes Journey routing role-aware for the first time. Small, scoped, builds directly on what's just been verified working — not a new, larger initiative like Patient-actor or Tier-lifecycle, both of which deserve their own dedicated pass later.
+The links are navigation suggestions, not tracked plans, consistent with SPEC-22 §5.14.
 
-## 6. Refinement: the "States and Transition Map" diagram — real overlap, real reuse, one real new initiative
+## 6. Refinement: the overlap diagram and the Patient decision
 
-A follow-up diagram replaced strict nesting with genuine overlap (Public/Authenticated ovals cross specifically over "onboard," not the whole boundary) and added a real per-role Journey Stages table plus a Storage-tier record lifecycle. Checked against real code before responding, not just visually agreed with:
+A second diagram replaced strict nesting with overlap (Public and Authenticated overlap exactly at
+"onboard"), placed ABDM as a side structure, and added per-role journey stages and a storage
+lifecycle.
 
-- **The overlap shape is correct and is kept** — confirms §3's critique directly: Public and Authenticated aren't clean containment, `register`/the start of `onboard` genuinely straddle the boundary.
-- **ABDM (HFR/HPR/ABHA) drawn as a side-structure inside Authenticated, not sequenced into Journey** — matches §3's recommendation exactly. Kept.
-- **Per-role Journey Stages, verified against real code — mostly already built, not new work:**
-  - Hospital's `affiliates` → real `facility_affiliates` table / `addAffiliate`/`listAffiliatesByFacility` (Provider Composition merge work).
-  - Provider's `linking` → the same affiliate mechanism, the practitioner-side view of it — not a second mechanism.
-  - Hospital's `activate` → real `onboarding.js`'s `publish()`/`everPublished` (clinic go-live). **Provider's `activate` is a real open question, not confirmed** — likely HPR/account activation, a materially different mechanism than clinic-publish sharing a label by coincidence. Worth pinning down precisely before building rather than assuming they're the same step.
-  - Every row's shared terminal `service desk` → real Checkout, for Hospital/Provider (staff-operated).
-- **Patient's row is the one genuinely new, large initiative, not a small addition** — `consult`/`soap note`/`service desk` for a *Patient* actor implies a real patient-facing portal (viewing their own consultation notes, their own bill) — this doesn't exist anywhere (§2 already flagged Patient has no authenticated-actor path at all). This is the single biggest real decision embedded in the diagram and deserves an explicit go/no-go before it's treated as buildable alongside the Hospital/Provider rows, which mostly aren't new work at all.
-- **The Storage-tier lifecycle (Draft → Ready → Reviewed → Complete, Retrieve/Publish between Local and Server) is genuinely new** — verified directly: doesn't reuse `encounter_status`'s real vocabulary (`arrived`/`in-progress`/`finished`/`cancelled`) or Designer.vue's unrelated `draft`/`final` form-versioning concept. This is real, valuable, missing modeling — but it covers the same ground `docs/SPEC-19-LOCAL-FIRST-LOCAL-SERVER-AND-FEDERATED-MODES.md` §7's conflict-detection (`meta.versionId` divergence) already claims. Recommend reconciling the two into one design rather than building a second, parallel local↔server sync model — Retrieve/Publish read naturally as SPEC-19's Local+Server mode made concrete with an explicit per-record status field SPEC-19 itself doesn't yet have.
+- Overlap and ABDM placement: correct, kept.
+- Per-role stages map to existing mechanisms: the hospital's `affiliates` and the provider's
+  `linking` are one mechanism (SPEC-26's join tokens and `facility_affiliates`); the hospital's
+  `activate` is publishing the clinic page. **The provider's `activate` is still undefined.**
+- **Patient decision** (explicit): *"Patient will not have a login to this application. Patient
+  can see his health records via DigiLocker, no features more than that."* Patient is a data
+  subject staff act for, never an account. The only patient-facing touchpoint is the DigiLocker
+  export (SPEC-09 §5).
+- The storage lifecycle (Draft → Ready → Reviewed → Complete, with Retrieve and Publish between
+  local and server) is real missing modeling. It should be merged into SPEC-19 §7's
+  versioned-conflict design, not built as a second sync model.
 
-**Resolved directly**: *"Patient will not have a login to this application. Patient can see his health records via digi-locker no features more than that."* This removes the concern entirely rather than scoping it down — there is no patient portal to design. **`Patient` in the Roles/Actors box is not a peer of Hospital/Provider** — it never gets an `accounts.role` value, never has its own Auth Stage branch; it's a data subject Hospital/Provider-authenticated staff act on behalf of. The Patient row's real content (`register`→intake, `onboard`→consent/additional forms, `consult`/`soap note`→Consultation Desk, `service desk`→Checkout) is staff-mediated and already-built or close to it (SPEC-09's custom-forms-in-patient-journey work). The one real patient-facing touchpoint is the already-shipped DigiLocker export from Checkout — worth a small, separate follow-up question (does it need to fire earlier too, e.g. after `soap note`, not only at Checkout) but not a new initiative.
+## 7. Related specs
 
-**Verdict**: ready to lock in — the structural shape (overlap, ABDM placement, per-role stages) is sound and, for Hospital/Provider, is largely already-built pieces being correctly organized rather than new work. Two things need resolving before treating the whole map as buildable: (1) an explicit scope decision on the Patient portal — real and big, not a footnote; (2) reconcile the new Storage lifecycle into SPEC-19 §7 rather than as a separate design.
-
-## 6.3 §5 built and live-verified
-
-Role-based next-action triggering is real now, not just recommended:
-
-- **`planDefinitionRunner.js`**: invoke's real resolved value (`event.output`, XState v5, verified empirically) is now captured into context as `result_<actionId>` instead of being discarded the instant `done` fires — a new `actionResult(snapshot, actionId)` selector reads it, mirroring `actionError`'s existing flat-context-key pattern.
-- **`workflowRuntime.js`**: a new `onActionDone(planId, actionId, callback)` — the exact "reacting to one action's completion to trigger something OUTSIDE that action" capability SPEC-13 §9 named as missing. Fires with `(result, context)` every time that action transitions into `done`, including a second time for a `repeatable` action (this session's earlier fix). Returns an unsubscribe function.
-- **`entryWorkflow.js`**: a new `onRoleKnown(callback)` wires `onActionDone` to both `register` and `login` (either is a real "the user is now known" moment), extracting `role` from the real account object clinuxflow-api's own register/login routes return.
-- **`Cubo.vue`**: subscribes to `onRoleKnown`, scoped to the same general/unauth-entry `onMounted` branch that seeds the entry menu (not every Cübo instance app-wide — AI Engine's/Designer's own category-specific instances have no reason to). Maps each real `accounts.role` value to a real, already-built page — `hospital_admin` → `/hospital-onboarding`, `health_professional` → `/staff-onboarding`, `admin_and_health_professional` → both — rendered as a new `nav-suggestion` rich-content message type (real navigation, reusing `.cubo-entry-menu-btn` styling, no new CSS needed).
-- **Deliberately a navigation suggestion, not a second tracked PlanDefinition** — Facility/Provider Registration don't exist as real frontend runtime plans yet (that's SPEC-13/16/18's own bigger, separate, not-yet-started work); pointing at the real pages that already do this job is the honest, buildable slice.
-- **`role-equals` added to the condition-types catalog** (`condition-types.json`/`condition-type-templates.json`, rebuilt via `build-condition-types.js`) for the declarative-authoring-pipeline side, matching `specialty-equals`/`provider-actively-affiliated`'s exact precedent — not literally executed by this hand-authored JS path, same as those two aren't yet either.
-- **A real test-isolation bug found and fixed along the way, not the feature itself**: `entryWorkflow.test.js` uses the REAL `taskActorSnapshots` persistence — a module-level singleton collection that survives across tests in one file regardless of a fresh Pinia instance per test. An earlier test driving non-repeatable `register` to `done` left a persisted snapshot a later test's "fresh" store rehydrated from, silently dropping that later test's own FOCUS (already `done`, not repeatable) — the exact real bug this session found and fixed, reappearing here as a test-isolation artifact. Fixed by clearing `taskActorSnapshots` in `beforeEach`.
-- 12 new tests across `planDefinitionRunner.test.js`/`workflowRuntime.test.js`/`entryWorkflow.test.js`. Live-verified end to end via Playwright for all three real role values (`hospital_admin`, `health_professional`, `admin_and_health_professional` — confirming the combined case shows both suggestions), zero console errors, `clinux-frontend` 146/146.
-
-## 7. Relationship to existing specs
-
-- `docs/SPEC-19-LOCAL-FIRST-LOCAL-SERVER-AND-FEDERATED-MODES.md` §5 — the parallel-region pattern §3 here extends to all six dimensions, not just mode/connectivity/interaction.
-- `docs/SPEC-20-REFERENCE-PATTERN-JOURNEY-WORKBENCH-AND-UNAUTH-CUBO-ENTRY.md` — the Auth Stage dimension's real, tested implementation this spec's §2 confirms against.
-- `docs/SPEC-16-NOTEBOOKS-AND-TASK-PRIMARY-NAVIGATION.md` §5 — Journey's real fix (Task/notebook-anchor-driven, not a static prop), reconfirmed still-pending here.
-- `docs/SPEC-05-DATA-TIER-AND-ABDM-BOUNDARY.md`, `docs/SPEC-07-SNOMED-CLINICAL-CHAT.md` Part C — the three real Storage mechanisms this spec's §2 names as needing unification, not replacement.
-- `clinux-planDefinition-runtime-built` memory — names role-based next-action triggering as designed-not-built; this spec's §5 picks that back up as the concrete next step.
+SPEC-19 §5 (the parallel-region pattern), SPEC-20 (the auth dimension's implementation), SPEC-16
+§5 (journey routing), SPEC-05 and SPEC-07 Part C (the storage mechanisms).

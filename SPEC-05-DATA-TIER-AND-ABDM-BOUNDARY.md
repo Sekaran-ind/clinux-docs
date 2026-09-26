@@ -1,72 +1,137 @@
-# Specification 05: Data Tier & ABDM Product Boundary
+# SPEC-05: Data Tiers and the ABDM Product Boundary
 
-## 1. Objective
+| | |
+|---|---|
+| **Status** | Current policy. Free/paid tiers built; enterprise tier not built; two policy lines are not yet enforced in code (§6.4). |
+| **Last reviewed** | 2026-09-26 |
+| **Code** | `clinuxflow-api/src/lib/shared/userAuth.js` (`requireUser`, `requirePaidTier`), `src/lib/shared/usageTracking.js`, `migrations/0003` (`clinics.tier`), `migrations/0007` (usage), `clinux-frontend/src/data/collectionFactory.js`, `src/data/sharedServerSync.js` |
+| **Related** | SPEC-01 §6, SPEC-11 (ABDM milestones), SPEC-19 (modes), SPEC-21 (tier lifecycle), SPEC-25 (task mirror) |
 
-Give one explicit, authoritative answer to "where does this data live, and why" — replacing the ad hoc, feature-by-feature placement decisions that have been producing real bugs (e.g. ClinicHome falling back to a hardcoded demo clinic instead of a registered clinic's real data, because its profile lived in a different tier than its staff roster, with no stated rule for which one wins). This spec is the reference point for the three ABDM onboarding journeys (ABHA, HPR, HFR) and every future feature that touches storage placement. It supersedes case-by-case judgment calls made earlier in the project.
+## 1. Purpose
+
+One authoritative answer to "where does this data live, and why". Before this spec, placement was
+decided feature by feature, and that produced real bugs (for example ClinicHome falling back to a
+hard-coded demo clinic because its profile and its staff roster lived in different tiers with no
+rule for which wins).
 
 ## 2. The three storage tiers
 
-- **Local-first** (per-device TanStack DB / `localStorage`) — always present, zero network dependency, visible only to the device it's on.
-- **LAN-shared** (Tauri live-server) — a shared store reachable by every device on the clinic's own network. Same mechanism as local-first, just backed by a server on the LAN instead of `localStorage`.
-- **Cloud** (D1 in clinuxflow-api; R2 if a content-plane blob store is ever needed) — durable, reachable from anywhere with internet, the only tier that survives a device being off or off-site.
+| Tier | Mechanism | Reach | Present for |
+|---|---|---|---|
+| **Local** | TanStack DB collections on localStorage or IndexedDB | This device only | Every clinic, always |
+| **LAN** | Tauri shared server (`src-tauri/shared_server.rs`, HTTPS `:47856`), mirrored by `sharedServerSync.js` | Devices on the clinic's network | Every clinic that runs it |
+| **Cloud** | D1 behind clinuxflow-api | Anywhere with internet | Paid clinics (with the exceptions in §6.4) |
+
+The LAN tier is the same collection interface backed by a server on the clinic's network instead
+of the browser. Callers never know which tier served them.
 
 ## 3. Master-data principle
 
-Cloud/D1 identity (`accounts`, `clinics`) is root identity — real the moment an account is registered, regardless of connectivity mode. Local/LAN Provider-Profile data (Hospital Profile drawer, Team roster display) is *enrichment* layered on top of that root identity — never the reverse. A missing enrichment record should fall back to root identity, not to a hardcoded placeholder.
+Cloud identity (`accounts`, `clinics`) is the root and exists from the moment an account
+registers, whatever the tier. Local and LAN provider data (the Facility profile, the care-team
+roster) enrich that identity. A missing enrichment falls back to root identity, never to a
+placeholder. Once a facility is HFR-registered, the HFR record becomes the authority for the
+fields HFR owns.
 
-This principle governs the interim state only. Once the HFR journey (§5) exists, facility identity fields migrate to being sourced from the facility's own HFR record instead — see the open item in §8.
+## 4. Reference-only relationships
 
-## 4. Reference-only data model
-
-Every cross-record relationship — Encounter→Patient today, and Encounter→ABHA / Practitioner→HPR / Organization→HFR going forward — is a **one-directional stored reference**. Reverse lookups (all encounters for a patient, all facilities a professional is affiliated with) are always a computed filter/query, never a stored back-link. This is what keeps the data graph acyclic by construction, with no risk of the embedded-recursion problem that prompted this rule. Already the pattern in `clinical.js`'s `patientRef` / `encounter_patient_ref`; extend new ABDM identifiers the same way rather than inventing a different convention.
+Every cross-record relationship is a **one-directional stored reference** (Encounter → Patient,
+Practitioner → HPR ID, Organization → HFR ID, PractitionerRole → Organization). Reverse lookups
+(all encounters for a patient) are always computed queries, never stored back-links. This keeps
+the graph acyclic by construction. `clinical.js`'s `patientRef` is the original instance; the
+GraphDefinitions in SPEC-24 formalize the same rule.
 
 ## 5. ABDM's role: federated identity, not operational storage
 
-HFR/HPR/ABHA are identity/registry data — who is this facility/professional/patient, and are they verified. They are not, and per ABDM's federated architecture cannot be, a store for operational/clinical workflow data (active encounters, worklist assignment, vitals, SOAP notes, billing). Each HIP (each clinic) retains custody of its own visit records permanently; ABHA is the correlating identifier across clinics, not a data store; the Consent Manager is a discovery-and-consent layer, not storage.
+HFR, HPR and ABHA answer "who is this facility, professional or patient, and are they verified".
+They do not store operational data, and in ABDM's federated design they cannot: each facility
+(as a Health Information Provider) keeps custody of its own visit records, ABHA correlates
+patients across facilities, and the Consent Manager handles discovery and consent, not storage.
 
 Consequences:
+- Local, LAN and cloud tiering for encounters, vitals, notes and billing is unaffected by ABDM.
+- ABDM adds a new reason for cloud durability: an HFR-registered facility takes on a standing
+  duty to answer future health-information requests reliably. A device that is off or offline
+  cannot do that.
+- Health-record exchange (HIP push, HIU pull, consent artefacts) is out of scope here (SPEC-11 §5).
 
-- Local/LAN/cloud tiering for encounter/vitals/SOAP/billing data (§2–3) is **unaffected by ABDM** and stays exactly as designed — none of it competes with what HFR/HPR/ABHA do.
-- ABDM adds a **new reason** cloud durability matters, distinct from internal multi-staff coordination: a clinic that completes HFR registration takes on a standing duty to serve future HIU pull requests reliably, at any future time — a local-only or offline device cannot do this.
-- Health-record exchange itself (HIP push / HIU pull, consent artifacts) stays explicitly out of scope for this spec, same as `clinuxflow-abdm-integration-approach.md` — anticipated by the tier boundary in §6, not designed here.
+## 6. Three commercial tiers, one additive model
 
-## 6. Three pricing tiers, one additive model
+### 6.1 Free
+- Local and LAN storage. Multi-staff coordination over the LAN is included. The line is "no reach
+  beyond the premises and no health-information exchange", not "single user".
+- ABHA lookup and creation for patients (a citizen convenience with no ongoing obligation).
+- HPR registration for staff (a personal, portable credential).
+- **Not included by policy**: HFR registration, because it creates the standing duty in §5.
 
-**Free tier:**
-- Local-only and/or LAN-shared (Tauri) storage only. No cloud durability requirement.
-- Multi-staff coordination via LAN-shared mode is included — the gate is "no cross-location reach, no HIE participation," not walk-in vs. ongoing-patient relationship. A multi-staff, LAN-only specialty clinic is free tier just as much as a single-visit walk-in clinic.
-- Patient **ABHA** lookup/creation is available — a citizen convenience that creates no ongoing obligation on the clinic, since an unregistered facility's records aren't HIE-discoverable regardless.
-- Staff **HPR** registration is available — a personal, portable professional credential, independent of the clinic's own tier.
-- Facility **HFR** registration is **not** available — this is the one registration that creates a standing duty to durably serve future HIU requests, which free tier cannot promise.
+### 6.2 Paid (`clinics.tier = 'paid'`)
+Adds cloud durability and cross-location coordination, enforced by `requirePaidTier()` on:
+- `/api/encounters/*` (documents mirror, assignment, stage locks)
+- `/api/tasks/*` (snapshot and audit mirrors, locks, SPEC-25)
+- `/api/resources/:type/search` and `/save` (the generic resource mirror)
+- `POST /api/workflow/test-scribe` (Workers AI cost)
 
-**Cloud tier** (`clinics.tier = 'paid'` — the existing `requirePaidTier()` gate, unchanged) **adds:**
-- Cloud-durable storage (encounter data, provider profile become cloud-authoritative), enabling cross-location staff coordination — the `encounter_assignments` / lock system — beyond a single LAN.
-- Facility **HFR** registration and ongoing, reliable participation as a real ABDM HIP.
-- Cloud-durability and ABDM-HIP compliance obligations are bundled together for v1 rather than sold as separable add-ons. Revisit if a customer wants cloud reach without taking on ABDM registration overhead.
+`requirePaidTier()` reads `clinics.tier` from D1 on every call, so an upgrade takes effect without
+logging in again. Usage is metered per clinic per day from real `rows_written`
+(`clinic_usage_daily`). Cloud durability and HFR/HIP obligations are bundled for now; revisit if
+a customer wants one without the other.
 
-**Enterprise tier** = Cloud tier **plus** a provisioned nano data center (see `docs/SPEC-07-SNOMED-CLINICAL-CHAT.md` Part C — MedGemma/MedCAT-medspaCy/MedSAM real-time audit and safety warnings). Modeled additively, not as a third value on `clinics.tier` — a Cloud-tier clinic gains Enterprise capability the moment it has a `nano_dc_endpoint` provisioned (a new nullable field on `clinics`; null = no nano-DC access). This keeps the existing binary `requirePaidTier()` gate untouched for everything already built, and adds a second, independent gate for Part C's routes specifically.
-- **Shared**: multiple enterprise clinics' `nano_dc_endpoint` all point at the same, centrally-operated cluster. Real capacity consideration, not assumed away: GPU inference isn't instantly parallel across tenants, so a shared deployment needs a request queue/fair-scheduling plan once more than one clinic uses it concurrently.
-- **Dedicated**: an enterprise clinic gets its own physically separate hardware, with its own endpoint — `nano_dc_endpoint` points at that clinic-specific address instead.
-- Which one, and at what price, is a sales decision per customer ("agreed price model") — architecturally both are the same code path, just a different value in one column.
+### 6.3 Enterprise (design only)
+Paid plus a provisioned nano data centre (SPEC-07 Part C) for on-premises inference. Modeled
+additively: a nullable `clinics.nano_dc_endpoint`, with its own `requireNanoDcAccess()` gate, so
+the binary paid gate stays untouched. Shared or dedicated hardware is a pricing decision, not a
+code fork, but shared mode needs a real request-scheduling design (GPU inference is not elastic).
+**None of this exists yet**: no column, no gate, no gateway.
+
+### 6.4 Where code and policy differ today
+1. **HFR registration is not gated.** Nothing checks the tier: not `FacilityHfrPanel.vue`, and
+   not the gateway (which has no user identity at all, SPEC-01 §10). A free clinic can register
+   with HFR today. Either enforce the policy (a tier claim on a gateway token) or change it.
+2. **`provider_composition` is mirrored for every tier.** `GET`/`PUT /api/provider-composition`
+   are `requireUser()` only. This was deliberate in SPEC-26: the server must know whether a
+   facility has published before it issues join tokens, and staff on another device must be
+   able to pull the clinic profile. It is a small, bounded exception (one document per clinic)
+   and should be named as one in pricing.
+3. Chat signaling, video join and Wikidata lookups are not tier-gated, by design (small, and
+   relayed rather than stored).
 
 ## 7. Compliance containment
 
-All Aadhaar/ABDM-adjacent PII handling — RSA encryption, OTP flows, audit logging, DSC certification scope — stays entirely within paid-tier code paths (`clinuxflow-abdm-gateway`, and the HFR journey specifically). Free tier never exercises this surface at all, which keeps its security/compliance review scope minimal by construction, not just by policy.
+All Aadhaar- and ABDM-adjacent handling (RSA encryption of identifiers and OTPs, transaction
+state, ABDM access tokens) lives in clinuxflow-abdm-gateway and nowhere else. Aadhaar numbers
+and OTPs are encrypted per transaction and never stored; only resulting identifiers (ABHA number
+or address, HPR ID, HFR facility ID) are kept.
 
-Same discipline applies to Enterprise tier's nano-DC surface: unlike chat signaling (which only ever relays connection-establishment metadata, never content — §9's sibling spec), Part C's requests carry real clinical text/audio/imaging across the Cloudflare Tunnel boundary to the nano DC. That's a real PII/PHI transit surface and needs the same encryption-in-transit, minimal-retention, access-logging treatment as the ABDM flows above — not assumed safe just because the compute happens on owned hardware rather than a third party's.
+The containment goal was that the free tier never touches this surface. §6.4 shows that is not
+yet true for HFR, and SPEC-01 §10 shows the gateway's own access control is weaker than this
+section assumes. Both need fixing before a compliance review can rely on this boundary.
+
+The enterprise tier's nano-DC traffic will carry clinical text, audio and images across a
+Cloudflare Tunnel. That is a PHI transit surface needing the same treatment (encryption in
+transit, minimal retention, access logging). Owned hardware does not exempt it.
 
 ## 8. Open items
 
-- **What triggers local-only vs. LAN-shared/cloud mode**: an earlier draft of this spec proposed a staff-count rule (1 account = local-only forever, 2+ accounts = server-mode becomes necessary). Retracted as too brittle — a second account doesn't reliably signal a real coordination need (e.g. a backup/admin login, a temporary contractor), and the rule forced a mode switch off a roster change rather than an actual usage need. Deferred; revisit with a better signal later.
-- **Registration cutover scope**: once all three ABDM journeys are complete, the plan is full replacement of the current non-ABDM registration flow — but does that apply even to facilities that would otherwise stay local-only/free tier, forcing ABDM registration regardless of how they operate? Or does the free/local-only path stay exempt from *registration* even post-cutover, with ABDM only required to reach paid-tier capability? Unresolved — needs a decision before the actual cutover, not before starting the journey builds.
-- **ClinicHome's facility-identity fallback** (currently the `DEMO_CLINIC` / `buildSeedFromRegistration()` question) should be re-scoped against HFR once that journey exists per §3, rather than patched under the pre-ABDM model.
+- Choosing between local-only and LAN/cloud modes: a staff-count trigger was proposed and
+  retracted (a second account does not reliably mean a coordination need). Today the mode is an
+  explicit user choice (ClinicHome's sync toggle). No automatic trigger is planned.
+- Whether free and local-only facilities must register with ABDM once all three ABDM journeys
+  are complete. Undecided; it needs a decision before any registration cutover.
+- Trial, suspended and discontinued tier states (SPEC-21 §4): not modeled. `clinics.tier` is
+  `CHECK (tier IN ('free','paid'))`.
+- Resolve §6.4 items 1 and 2.
 
-## 9. Repo structure for the ABDM journeys
+## 9. Where the ABDM journeys live in the frontend
 
-HPR and HFR already share one page (`AbdmOnboarding.vue` in clinux-frontend) against the isolated `clinuxflow-abdm-gateway` backend, which is the only component holding ABDM credentials. The ABHA (patient) journey follows the same pattern — a new route inside clinux-frontend, not a separate deployable project — because:
+The original single `AbdmOnboarding.vue` page was retired. Each journey is now a panel inside the
+entity it belongs to, all calling the gateway through `abdmGatewayClient.js`:
 
-- Credential isolation is already satisfied by the gateway split (backend), independent of which frontend calls it; a separate frontend project buys no additional security containment.
-- The scoped use case is assisted enrollment during a clinic visit (Front Desk), not a standalone citizen self-service product.
-- It reuses existing infrastructure (`LhcFormHost`, `formData` collections, the shared visual system) instead of duplicating it across two repos.
+| Journey | Panel | Hosted in |
+|---|---|---|
+| HFR (facility) | `FacilityHfrPanel.vue`, a 7-stage `RegistrationLedger` gated by `facilityHfrJourney.js` | Onboarding (Hospital section) |
+| HPR (professional) | `ProviderHprPanel.vue`, gated by `hprRegistrationJourney.js` | Onboarding (Care Team section), StaffOnboarding |
+| ABHA (patient) | `PatientAbhaPanel.vue` | `PatientBasicsHost.vue` (Front Desk, PatientHome) |
 
-A standalone citizen-facing ABHA/PHR product (public self-service, no clinic affiliation required, its own auth model, broader security-hardening needs for public Aadhaar input) would be a legitimate trigger to spin out a separate `clinux-shelf` project — but that's a different product with a different audience than assisted enrollment, and should wait for that need to actually materialize rather than being built ahead of it.
+A standalone citizen-facing ABHA/PHR product would justify its own repo (a different audience,
+auth model and hardening bar), but that would be a different product. Assisted enrolment at the
+front desk stays inside clinux-frontend.

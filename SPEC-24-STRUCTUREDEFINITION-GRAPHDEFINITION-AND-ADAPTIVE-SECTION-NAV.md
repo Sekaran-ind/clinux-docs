@@ -1,74 +1,133 @@
-# Specification 24: Real StructureDefinitions + GraphDefinition for Facility/Provider/Affiliate/Patient, and a Shared Adaptive Section-Nav Replacing CustomFormHost
+# SPEC-24: StructureDefinitions and GraphDefinitions for the Registration Entities, and a Shared Adaptive Section Nav
 
-## 1. Objective
+| | |
+|---|---|
+| **Status** | Built, except §7 step 8 (retrofitting Cübo's own mobile navigation onto `AdaptiveSectionNav`). |
+| **Last reviewed** | 2026-09-26 |
+| **Code (API)** | `data/structure-definitions/*.json` (7 profiles), `data/graph-definitions/{ClinuxFlowOnboardingGraph,ClinuxFlowPatientGraph}.json`, `src/lib/control/{conformance-validator,next-best-action,resource-registry,resource-records-db}.js`, routes `POST /api/{facility,provider,affiliate-organization}/conformance`, `GET /api/facility/affiliates/conformance`, `POST /api/resources/:type/conformance`, `GET /api/resources/:type/search`, `POST /api/resources/:type/save`, `migrations/0013` |
+| **Code (frontend)** | `src/components/AdaptiveSectionNav.vue` + `adaptiveSectionNav.js`, `src/components/control/*Host.vue`, `src/data/control/*Conformance.js`, `src/data/control/resourceRecords.js`, `src/pages/{Onboarding,StaffOnboarding,PractitionerHome,PatientHome}.vue` |
+| **Related** | SPEC-13 §5, SPEC-23 §8, SPEC-25 §2 |
 
-Two real gaps named in conversation, not yet built: (1) onboarding's "done"/"required"/"policy" logic is scattered ad-hoc JS (`getAnswer(...,'hospital_name')`, `required: true` flags in YAML) instead of one real, standard FHIR conformance artifact; retiring PlanDefinition-tracking for the 3 onboarding entities (SPEC-23) removed the one thing that gave any sense of sequence, and nothing replaced it. (2) `CustomFormHost.vue`/`FormField.vue` — built to fix LForms' cramped rendering — turned out to be the same mistake in different clothes: a second generic, schema-iterating auto-form-renderer. *"CustomFormHost... is a duplicate of lhcforms... with Profiles can we build a tabbed interface like Team modal window we have"* (explicit instruction) is the real fix: hand-authored panels, like `TeamSettingsModal.vue` already does, not another generic engine.
+## 1. Problems this solved
 
-## 2. Five StructureDefinitions, not four — a real modeling correction found while designing this
+1. "Done", "required" and policy for onboarding were scattered: ad-hoc JS checks and `required`
+   flags in YAML, with no standard conformance artifact. Once SPEC-23 removed workflow tracking
+   from registration, nothing expressed sequence either.
+2. `CustomFormHost.vue`/`FormField.vue` (built to escape LHC-Forms' cramped rendering) was the same
+   mistake again: a second generic schema-driven form engine. The fix is hand-authored panels with
+   a shared navigation shell, and a standard profile for validation.
 
-"Affiliate" turned out to name two different FHIR shapes, confirmed by reading `TeamSettingsModal.vue`'s already-shipped "Affiliates" tab: it links an *individual visiting practitioner's own account* (`practitionerEmail` + `role`), not an organization-to-organization relationship. That's real, already-live, and staying. What SPEC-23 discussed separately — "administrative steps... some of these may become shared service offered by affiliates" (imaging, laboratories, billing partners) — is an *organization*-level relationship, unbuilt. Same English word, two FHIR resources. Both in scope, per explicit instruction ("Affiliate means both Affiliate Practitioner and Affiliate Organization").
+## 2. Seven profiles
 
-| Entity | FHIR resource(s) | Real profile name |
+"Affiliate" turned out to mean two FHIR shapes: a visiting practitioner (a `PractitionerRole` at a
+facility that isn't their home) and a partner organization (`OrganizationAffiliation`: org A
+provides service X to org B).
+
+| Entity | Resource | Profile |
 |---|---|---|
 | Facility | `Organization` | `ClinuxFlowFacility` |
-| Provider | `Practitioner` (the person) + `PractitionerRole` (their role/specialty at a specific facility) | `ClinuxFlowProvider`, `ClinuxFlowProviderRole` |
-| Affiliate Practitioner | `PractitionerRole` (a visiting practitioner's role at a facility that isn't their home facility) | `ClinuxFlowAffiliatePractitionerRole` |
-| Affiliate Organization | `OrganizationAffiliation` (`organization` + `participatingOrganization` + `code` + `specialty` + `healthcareService`) — a real FHIR R4 resource built for exactly "org A provides service X to org B" | `ClinuxFlowAffiliateOrganization` |
-| Patient | `Patient` | `ClinuxFlowPatient` — unchanged from SPEC-21 §6's own resolution (no login, DigiLocker-only) |
+| Provider (person) | `Practitioner` | `ClinuxFlowProvider` |
+| Provider (role at a facility) | `PractitionerRole` | `ClinuxFlowProviderRole` |
+| Affiliate practitioner | `PractitionerRole` | `ClinuxFlowAffiliatePractitionerRole` |
+| Affiliate organization | `OrganizationAffiliation` | `ClinuxFlowAffiliateOrganization` |
+| Patient | `Patient` | `ClinuxFlowPatient` |
+| Workflow task | `Task` | `ClinuxFlowTask` (added by SPEC-25) |
 
-Splitting Provider into `Practitioner`+`PractitionerRole` (today's YAML conflates these onto `Practitioner.extension`) is a real, deliberate upgrade, not scope creep — it's what lets one Practitioner hold roles at more than one facility later, which the Affiliate Practitioner concept already requires structurally (a visiting practitioner's affiliate role has to be a *different* `PractitionerRole` instance than their home-facility role, referencing the same `Practitioner`).
+Splitting Provider into Practitioner + PractitionerRole (the YAML used to put role fields on
+`Practitioner.extension`) lets one person hold roles at several facilities, which affiliation
+requires.
 
-**What a real StructureDefinition buys over YAML's `required: true` flags**: standard cardinality (0..1/1..1/0..*), value-set bindings, and — the concrete, previously-flagged gap this closes — **slicing**. `Practitioner.telecom` sliced by `system` (`phone` vs `email`) is the real, standard FHIR answer to the `ContactPoint.system` tagging gap named as still-open in SPEC-23 §"Still genuinely open." No more inferring phone-vs-email from array position.
+Profiles give standard cardinality, fixed values, bindings and **slicing** (for example
+`telecom` sliced by `system`). The 18 ABDM extension fields are declared as extension slices.
+`ClinuxFlowFacility` and `ClinuxFlowProvider` are grounded in the HFR and HPR API docs;
+`ClinuxFlowPatient` in the ABHA V3 API and M2/M3 docs, including `Patient.contact` and seven ABHA
+verification extensions (`abha-kyc-verified`, `abha-verification-status`, `abha-verification-type`,
+`abha-email-verified`, `abha-mobile-verified`, `abha-status`, `abha-auth-methods`). KYC-verified and
+verification status are independent flags: a child ABHA can be `VERIFIED` without KYC.
 
-**extension.url convention carries forward unchanged**: the 18 ABDM-specific fields already re-homed onto real, distinctly-URLed extensions (SPEC-23's own build) become each Profile's own declared extension slices, not a second parallel list.
+## 3. Sequence without a state machine
 
-## 3. Sequence and "next best action" — GraphDefinition alone can't do this; here's the honest split
+A GraphDefinition describes references between resource types; it has no notion of time. Two
+sources of order, both **pure functions recomputed on demand**, so registration stays untracked:
 
-Real FHIR `GraphDefinition` describes reference cardinalities between resource *types*, for `$graph` fetch/assemble — it has no concept of time, state, or "before/after." It cannot express "classify facility type before assigning LGD codes" on its own; that would be forcing a resource meant for one job to do a different one, the same mistake `CustomFormHost` was.
+- **Structural dependency** from the graph's links: a PractitionerRole needs its Organization.
+  `ClinuxFlowOnboardingGraph` starts at Organization with links to PractitionerRole (→
+  Practitioner) and OrganizationAffiliation (→ participating Organization).
+  `ClinuxFlowPatientGraph` has one reverse link, Patient ← Encounter.subject.
+- **Business rules** as profile invariants, so "done" means "passes validation".
 
-Two real, distinct sources of sequence, used for what each is actually good at — **neither is a runtime actor, both are pure, stateless, recomputed-on-demand functions**, so "no PlanDefinition/workflow for these entities" (SPEC-23) stays true:
+`nextBestActions(graphDefinition, bundle, validationResults)` returns, for each link whose source
+is present and valid but whose target is missing, `{resourceType, reason, linkId,
+sourceResourceId}`. No actor, no snapshot. SPEC-25 lets a runtime Task cite such a suggestion as
+its reason.
 
-- **Structural dependency** (a `Location` can't meaningfully exist before its `Organization` does) — implied for free by GraphDefinition's own reference topology (`link[].path`/`target[].type`/`min`/`max`). Real, standards-pure, no invention needed.
-- **Business-rule sequencing** (the ABDM sub-chain; "subtype requires type first") — not implied by any reference. Encoded as StructureDefinition **invariants** (FHIRPath `constraint` elements) — "done" is "passes validation," evaluated fresh, never a persisted status.
+## 4. Knowledge-graph note
 
-**Next best action** = walk the GraphDefinition; for every link whose source is present-and-Profile-valid but whose target isn't, surface it as a candidate. A small, pure function (`src/lib/next-best-action.js`, clinuxflow-api) taking `(graphDefinition, currentResourceBundle, validationResults)` → an ordered list of `{resourceType, reason}`. No actor, no snapshot, no XState.
+A GraphDefinition is a schema, not a knowledge graph. The instances are the persisted resources.
+Wikidata QIDs on specialties are the one existing link to an external knowledge graph.
 
-## 4. Knowledge graph / self-learning — precise about which layer
+## 5. `AdaptiveSectionNav`
 
-`GraphDefinition` is a *schema*-level artifact (node types, edge types) — a legitimate, reusable foundation, not itself a knowledge graph in the ML sense. The actual knowledge lives in the *instance* graph (real persisted `Organization`/`Practitioner`/`OrganizationAffiliation` resources — gated on real storage existing, still explicitly deferred) plus what's already seeded: Wikidata QID tagging on staff specialties (SPEC-06/08) is a real, already-built anchor into an external KG. This spec's schema work is compatible groundwork for that later effort, not a substitute for it and not blocking on it.
+One responsive navigation shell, built on Reka UI primitives:
+- `sections: [{id, label, icon, badge?, badgeTone?}]`, `mode: 'tabs' | 'sidebar' | 'accordion' | 'panes'`.
+- At 768px and above: the chosen mode. Below: one content area plus a "⋮" menu of sections.
+- It owns only navigation; each section's content is a named slot filled by hand-written markup.
+- The chosen mode persists per instance (`storage-key`).
 
-## 5. `AdaptiveSectionNav` — one shared responsive shell, not per-surface reinvention
+Used by Onboarding (page-level sidebar over Hospital, Care Team, Services, Hours, Consents,
+Affiliate Organizations, with badges such as "Saved" and "2 added"), inside each host
+(Basics / Address / Contact), and by StaffOnboarding, PractitionerHome, FrontDesk,
+`FacilityStatusCard` and `BottomSheet`.
 
-*"Pops ups are not good for mobile devices... tab, accordion such grouping can be space occupying in mobile... the right three dot context menu can hold the options... this is what I wanted for Cubo as well... approach should be common across the application"* (explicit instruction). Confirmed live, not assumed: Cübo already has its own separate, ad-hoc version of this exact problem — `threePaneMobileView` (a mobile-only sub-tab strip that only exists inside 3-pane mode) plus entirely different hand-rolled toggle buttons (`toggleThreadView()`/`toggleProfileView()`) for FAB/MODAL_DOCK mode. Two bespoke mobile adaptations for the same underlying need — real evidence the unification is worth doing, not a hypothetical.
+## 6. `CustomFormHost` retired
 
-Built on **Reka UI** (`reka-ui`, already a dependency, already used once in `RegisterForm.vue`'s `RadioGroupRoot`) — confirmed real, available exports: `TabsRoot`, `AccordionRoot`, `DropdownMenuRoot`/`Trigger`/`Content`/`Item`. One component, `src/components/AdaptiveSectionNav.vue`:
+Deleted once every consumer moved to hand-authored hosts. The hosts still save the same
+`QuestionnaireResponse` item shape through `mergeGroupResponseItem`/`appendGroupResponseItem`, so
+extraction, assembly and conformance are unchanged. Only rendering changed.
 
-- Props: `sections: [{id, label, icon}]`, `mode: 'tabs' | 'sidebar' | 'accordion' | 'panes'` (a hint for viewports at/above the breakpoint — `panes` meaning "show simultaneously," the other three meaning "one at a time, switchable"; `panes` is Cübo's own 3-pane case, not needed by the entity editor).
-- Breakpoint: the app's existing `md:` (768px) Tailwind breakpoint — reused, not reinvented.
-- Above the breakpoint: renders `mode` via the matching Reka primitive (`sidebar` is a plain vertical button list, not `NavigationMenuRoot` — that primitive is built for hover-flyout mega-menus, the wrong fit for a static in-panel list).
-- Below the breakpoint: collapses to a single content area plus a "⋮" `DropdownMenuTrigger` listing `sections`; picking one shows just that section.
-- Owns navigation chrome only, via a scoped slot per section — content stays hand-authored by the caller, exactly `TeamSettingsModal.vue`'s style. This is the actual fix for "CustomFormHost is a duplicate of lhcforms": the part that's shared and reusable is the *chrome*, never the field rendering.
-- User's chosen `mode` persisted per-component-instance via localStorage, defaulting to `tabs`.
+Hosts: `FacilityBasicsHost`, `LocationsHost`, `ServicesHost`, `HoursHost`, `ConsentsHost`,
+`AffiliateOrganizationHost`, `ProviderBasicsHost`, `ProviderPersonalDetailsHost`,
+`ProviderQualificationsHost`, `ProviderWorkExperienceHost`, `ProviderDocumentsHost`,
+`PatientBasicsHost`. ABDM panels (`FacilityHfrPanel`, `ProviderHprPanel`, `PatientAbhaPanel`) sit
+beside them. HFR and HPR run as `RegistrationLedger` stage lists gated by real API prerequisites
+(`facilityHfrJourney.js`, `hprRegistrationJourney.js`), and end in an `AttestationCard`.
 
-**Sequencing, not simultaneous scope**: build and prove `AdaptiveSectionNav` on the entity editor first (needed immediately, lower risk — fresh code). Retrofitting Cübo's own `threePaneMobileView`/toggle-button mechanism onto it is real, separate risk against a large, currently-working, tested component — an explicit phase 2 of this same spec, not bundled into the same pass.
+## 7. Build record
 
-## 6. Retiring `CustomFormHost.vue`/`FormField.vue`
+1. ~~Profiles and graph~~: done.
+2. ~~Conformance validator with tests~~: done (`validate(structureDefinition, resource)`).
+3. ~~Next-best-action~~: done.
+4. ~~`AdaptiveSectionNav` with tests~~: done.
+5. ~~Facility reference rebuild~~: done. Onboarding.vue's drawer was later replaced by the
+   page-level nav; `LocationsHost` was added because nothing had ever created the locations that
+   services and staff reference.
+6. ~~Provider, affiliate practitioner, affiliate organization, patient~~: done.
+   - Provider: `PractitionerHome.vue` is a resume-style profile page (photo, headline,
+     qualifications, experience, documents, HPR credential), with StaffOnboarding as the editing
+     surface.
+   - Patient: `PatientHome.vue` (`/patient-home`) with a Design Page (a searchable directory: local
+     records, plus a read-only "on other devices" list from the paid-tier search) and a Data Page
+     (`PatientBasicsHost`), plus Cübo in a `patient-directory` thread. Staff reach it from
+     ClinicHome's navigation.
+   - **Generic resource API**: `resource_records` (one D1 table keyed by resource type and id,
+     clinic-scoped, JSON plus three promoted search columns) and `RESOURCE_REGISTRY`. `save`
+     requires the client's stable `recordId` because the extractor mints a fresh id on every call.
+     `save` does not require `valid: true`, because the telecom slicing gap (SPEC-13 §5.3) makes
+     that unreachable for real patients. The old `POST /api/patient/conformance` was removed.
+     Patient is the only registered type; Facility, Provider and affiliates still use their own
+     routes.
+7. ~~Delete `CustomFormHost.vue`/`FormField.vue`~~: done.
+8. Retrofit Cübo's mobile navigation (THREE_PANE's tab strip and the overlay toggles) onto
+   `AdaptiveSectionNav`: **not done**.
 
-Deleted once every consumer (`Onboarding.vue`, `StaffOnboarding.vue`, and the new Affiliate/Patient editors) is migrated to hand-authored panels inside `AdaptiveSectionNav`. What stays unchanged, deliberately: each panel still serializes its named, hand-coded fields into the same real `QuestionnaireResponse` item shape at save time (`{linkId, item:[{linkId, answer:[...]}]}`) — so `local-extractor.js`, `composition-assembler.js`, and `mergeGroupResponseItem`/`appendGroupResponseItem` all keep working completely unchanged. Only the render layer changes; the capture-to-storage backbone doesn't get torn out.
+## 8. Related specs
 
-## 7. Build sequencing (this pass)
+SPEC-23 (the "no workflow for registration" rule this respects), SPEC-13 (extraction and assembly
+unchanged), SPEC-09 (the ABDM extension fields carried forward), SPEC-25 (Task citing a suggestion).
 
-1. StructureDefinition + GraphDefinition JSON (clinuxflow-api) — the five profiles, one graph.
-2. A conformance validator (cardinality/required-ness against a StructureDefinition) + tests.
-3. The next-best-action function (§3) + tests.
-4. `AdaptiveSectionNav.vue` (clinux-frontend) + tests for its own mode/breakpoint logic.
-5. One full reference rebuild — Facility (`Organization`/`Onboarding.vue`) — proving the whole chain end to end, live-verified.
-6. Provider, Affiliate Practitioner, Affiliate Organization, Patient follow the same now-proven pattern (separate passes).
-7. Delete `CustomFormHost.vue`/`FormField.vue` once nothing references them.
-8. Cübo's own `AdaptiveSectionNav` retrofit — phase 2, its own pass.
+## 9. Open items
 
-## 8. Relationship to existing specs
-
-- `docs/SPEC-23-SPECIALITY-ROOM-AND-FIXED-ORCHESTRATION-ANCHORS.md` — this spec is the direct answer to its closing "Profile and Graph approach" pointer, and to its own "no plan definition or workflow" correction (§3 here keeps that true).
-- `docs/SPEC-13-FHIR-WORKFLOW-DOCUMENTS-AND-CONFORMANCE.md` — `local-extractor.js`/`composition-assembler.js` stay exactly as built; this spec adds a conformance layer on top, not a replacement.
-- `docs/SPEC-09-ABDM-ANCHORED-ONBOARDING-REBUILD.md` — the 18 ABDM extension fields it (via SPEC-23) established carry forward unchanged into each Profile's own extension slices.
+- Set `ContactPoint.system` so telecom slices can validate (SPEC-13 §5.3).
+- Move Facility, Provider and affiliates onto `resource_records`.
+- Designer's optional "include cloud records" toggle.
+- §7 step 8.

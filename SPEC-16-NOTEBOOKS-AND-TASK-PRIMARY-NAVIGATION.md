@@ -1,48 +1,66 @@
-# Specification 16: Notebooks & Task-Primary Navigation
+# SPEC-16: Notebooks and Task-Primary Navigation
 
-## 1. Objective
+| | |
+|---|---|
+| **Status** | Design. Its blocking prerequisite (persisted Tasks) now exists (SPEC-25), but no notebook, Task-to-thread binding or navigator has been built. Cübo shows a "Notebooks" placeholder. |
+| **Last reviewed** | 2026-09-26 |
+| **Related** | SPEC-13 §3, SPEC-15 §3, SPEC-18, SPEC-23 §4, SPEC-25 |
 
-Revise `docs/SPEC-13-FHIR-WORKFLOW-DOCUMENTS-AND-CONFORMANCE.md` §3: `Task` (the FHIR Workflow resource) is the primary structure Cübo's left pane navigates, not an independently-bookkept conversation thread with Workflow data attached as metadata. Introduce the **notebook** as the grouping container between "the whole navigator" and "one Task node." Define ephemeral, unanchored chat as the explicit exception outside this structure. Nothing built yet.
+## 1. Idea
 
-## 2. The inversion: Task primary, thread derived
+The FHIR `Task` is the primary structure Cübo's left pane navigates. A "thread" is the
+conversation that accumulates while working one Task, not a separately maintained list that has
+to stay in sync. A **notebook** groups Tasks under one anchor. Chat with no anchor is ephemeral.
 
-SPEC-13 §3 mapped `chatThreads.js`'s existing shape (`category` + optional `encounterId`) onto Definition vs. Request/Event tiers, treating the thread as the primary object and Workflow state as metadata riding along. This spec inverts that: **the Task is primary; a "thread" is the conversation log that accumulates while working a given Task node**, not a separately-maintained list that has to stay in sync with the Task graph. Opening a Task in the left-pane navigator and opening its thread are the same action — there is one structure, not two that could drift apart.
+## 2. The inversion
 
-## 3. Notebook: the container between "whole tree" and "one Task"
+Today a thread is primary (`category` plus an optional `encounterId`) and workflow state rides
+along as metadata. Target: open a Task in the navigator and you are in its conversation. One
+structure, not two that can drift.
 
-A notebook is anchored to a `PlanDefinition` instance, identified by an anchor-id. Four notebook types, matching what's already been established in this design line:
+## 3. Notebook types
 
-| Notebook type | Anchor-id | Lifecycle | Subtasks |
+| Type | Anchor | Lifecycle | Contents |
 |---|---|---|---|
-| Facility | the facility itself | singleton, perpetual | initial onboarding + later updates (e.g. replacing SPEC-14 §7's demo LGD codes with real ones) |
-| Encounter | encounter-id | one per patient visit, completes when Checkout does | Front-Desk, Consultation-Desk, Checkout Tasks (SPEC-13 §2.1's `relatedAction` sequence) |
-| Affiliation/Roster | a specific Practitioner-Facility or Facility-Facility relationship | perpetual for that relationship's lifetime | registration, credentialing changes, eventual offboarding — the roster-lifecycle machines, structurally different in shape from an Encounter's process/pipeline machine |
-| EpisodeOfCare | the episode itself (`EpisodeOfCare.diagnosis.condition` — the specific condition being longitudinally managed, e.g. a high-risk pregnancy, a rehab program) | bounded but long-running — spans multiple Encounters, ends when the condition/program does, not perpetual like Affiliation/Roster and not single-visit-bounded like Encounter | the individual Encounter notebooks it groups (`Encounter.episodeOfCare`, real FHIR field), plus a governing `CarePlan` (goals/interventions/meds/nutrition) — the CarePlan is the one subtask here NOT anchored to a PlanDefinition the way the other three notebook types' own workflows are: it's patient-specific content, though `CarePlan.instantiatesCanonical` CAN reference a PlanDefinition-authored protocol template the same SPEC-18 pipeline produces (see SPEC-23 §4 for the full reasoning, including why EpisodeOfCare→CarePlan isn't a direct FHIR field — the real link is via shared Condition/Patient) |
+| Facility | The facility | Singleton, perpetual | Setup and later updates |
+| Encounter | Encounter id | One visit; ends at Checkout | Front Desk, Consultation, Checkout Tasks |
+| Affiliation / roster | A practitioner–facility or facility–facility relationship | The relationship's lifetime | Joining, credentialing changes, offboarding |
+| EpisodeOfCare | `EpisodeOfCare` for one managed condition (for example a high-risk pregnancy or a rehab programme) | Bounded but long-running; spans many encounters | The encounter notebooks it groups (`Encounter.episodeOfCare`) and a governing `CarePlan`, which may instantiate a PlanDefinition protocol (`CarePlan.instantiatesCanonical`); see SPEC-23 §4 |
 
-## 4. Untethered chat is ephemeral, deliberately outside the notebook structure
+Since SPEC-23, facility and roster registration are not tracked workflows, so those two notebook
+types would hold conversation history and join or credentialing Tasks, not a registration
+checklist.
 
-No anchor-id, nothing to file it under — by design. **Ephemeral means not persisted** — discarded at session end, not kept in `chatThreads.js`. This is a real behavior change from what's shipped today: today's `category`-only threads (e.g. `ai-engine`, visible in the earlier Designer screenshots) *do* persist. Chosen deliberately here, not preserved silently, for two reasons: keeps the notebook structure clean of un-groupable entries, and avoids retaining casual/unimportant queries by default in a clinical app's data footprint.
+## 4. Ephemeral chat
 
-## 5. Left pane = one structure, not two
+Chat with no anchor is not persisted; it is discarded at session end. This is a behavior change
+from today, where category-only threads (such as `general`) persist. Reasons: keep notebooks free
+of ungroupable entries, and don't retain casual queries in a clinical app by default.
 
-Confirms `docs/SPEC-15-CUBO-UNIFIED-INTERACTION-SURFACE.md` §3's left pane is a single navigable tree: notebook type as the top grouping (reusing `chatThreads.js`'s existing `category` field's role, now backed by real anchor-id/notebook identity rather than a label string), Task hierarchy nested within each notebook, node status shown inline — this *is* the journey map from earlier discussion, not a separate widget alongside it.
+## 5. One left pane, not two widgets
+
+Top level: notebook type (taking over the role of today's `category`, but backed by a real
+anchor). Inside: the Task hierarchy with status shown inline. This is the journey map.
 
 ## 6. Build order
 
-1. Design the Task/notebook persistence model itself — the actual gap: no `Task`/`PlanDefinition` resource is persisted anywhere yet (SPEC-13 §2, still true as of this spec). Notebooks can't be built before Tasks are real, persisted objects. **The `PlanDefinition` half of this is now answered**: `docs/SPEC-18-PLANDEFINITION-AUTHORING-VIA-YAML-PIPELINE.md` — authored via the existing YAML/Questionnaire/extraction pipeline, not a new tool. `Task` persistence itself remains open.
-2. Revise `chatThreads.js`'s schema: replace/supplement `category`+`encounterId` with notebook-anchor-id + Task-id references; add an explicit non-persisted path for untethered chat.
-3. Build the left-pane navigator UI against the new model.
-4. Migrate SPEC-14's built Hospital Registration flow to be a Facility notebook's Task, not a standalone thread — same rework SPEC-15 §8 step 1 already requires, same underlying fix.
+1. ~~Persist Tasks~~: done (SPEC-25: IndexedDB snapshots and audit, D1 mirror, locks,
+   `ClinuxFlowTask` profile). PlanDefinition authoring: done (SPEC-18).
+2. Extend `chatThreads.js` rows with a notebook anchor id and a Task id; add a non-persisted path
+   for ephemeral chat.
+3. Build the navigator in Cübo's left pane (replace the placeholder).
+4. The first real notebook will be **Encounter**, once the outpatient visit runs as a
+   PlanDefinition (SPEC-04 §4). The Facility registration flow originally planned as the first
+   notebook no longer exists (SPEC-14 §7).
 
-## 7. Relationship to existing specs
+## 7. Related specs
 
-- `docs/SPEC-13-FHIR-WORKFLOW-DOCUMENTS-AND-CONFORMANCE.md` §2 — this spec's Task-primary model depends on `Task`/`PlanDefinition` actually being built; not done yet. §3 is superseded by this spec.
-- `docs/SPEC-15-CUBO-UNIFIED-INTERACTION-SURFACE.md` — the left pane's UI; this spec is the data model underneath it.
-- `docs/SPEC-18-PLANDEFINITION-AUTHORING-VIA-YAML-PIPELINE.md` — answers this spec's §6 step 1 for `PlanDefinition` specifically; `Task` persistence is still this spec's own open item.
-- `docs/SPEC-23-SPECIALITY-ROOM-AND-FIXED-ORCHESTRATION-ANCHORS.md` §4 — the EpisodeOfCare notebook type added to §3's table above; also names a second, independent reason (affiliate-fulfilled services) `Task` persistence is needed, beyond this spec's own Notebook motivation.
+SPEC-13 §3 (superseded by this model), SPEC-15 (the UI), SPEC-18 (authoring), SPEC-23 §4 (the
+EpisodeOfCare row; affiliate-fulfilled services as a second reason Tasks need owners), SPEC-25
+(persistence).
 
 ## 8. Open items
 
-- Whether a mid-encounter roster change (a provider going inactive while a Consultation Task is already assigned to them) needs explicit handling — flagged, not resolved, from the prior session's discussion.
-- Exact `chatThreads.js` schema migration path for existing persisted `category`-only threads under the new notebook model.
-- Whether ephemeral chat needs any minimal audit trail (even if content isn't retained, should "a conversation happened, at this time" be logged) — a real compliance-adjacent question, not addressed here.
+- A practitioner going inactive while a Task is assigned to them.
+- Migrating existing category-only threads.
+- Whether ephemeral chat needs a minimal "a conversation happened at time T" audit entry.
