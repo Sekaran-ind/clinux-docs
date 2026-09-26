@@ -1,0 +1,37 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-price-components",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-price-components</b></p><a name=\"ndhm-price-components\"> </a><a name=\"hcndhm-price-components\"> </a><a name=\"ndhm-price-components-hi-IN\"> </a><ul><li>Include all codes defined in <a href=\"CodeSystem-ndhm-price-components.html\"><code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components</code></a></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-price-components",
+  "version" : "6.5.0",
+  "name" : "PriceComponent",
+  "title" : "Price Component",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2021-08-28",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This Valueset contains codes that represent the components for price of item.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "copyright" : "This value set includes content from SNOMED CT, which is copyright © 2002+ International Health Terminology Standards Development Organisation (IHTSDO), and distributed by agreement between IHTSDO and HL7. Implementer use of SNOMED CT is not covered by this agreement",
+  "compose" : {
+    "include" : [{
+      "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components"
+    }]
+  }
+}

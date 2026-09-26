@@ -1,0 +1,39 @@
+{
+  "resourceType" : "CoverageEligibilityResponse",
+  "id" : "discovery-example-01",
+  "meta" : {
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityResponse"]
+  },
+  "language" : "en",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\"><p class=\"res-header-id\"><b>Generated Narrative: CoverageEligibilityResponse discovery-example-01</b></p><a name=\"discovery-example-01\"> </a><a name=\"hcdiscovery-example-01\"> </a><a name=\"discovery-example-01-hi-IN\"> </a><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Language: en</p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-CoverageEligibilityResponse.html\">CoverageEligibilityResponse</a></p></div><p><b>status</b>: Active</p><p><b>purpose</b>: Coverage Discovery</p><p><b>patient</b>: <a href=\"Patient-example-01.html\">ABC Male, DoB: 1981-01-12 ( Medical record number: 22-7225-4829-5255)</a></p><p><b>created</b>: 2023-09-11</p><p><b>requestor</b>: <a href=\"Practitioner-example-01.html\">Practitioner Dr. DEF</a></p><p><b>request</b>: <a href=\"CoverageEligibilityRequest-discovery-example-01.html\">CoverageEligibilityRequest: identifier = 7612345; status = active; priority = Normal; purpose = discovery; created = 2023-09-07 11:01:00+0500</a></p><p><b>outcome</b>: Processing Complete</p><p><b>disposition</b>: Policy is currently in-force.</p><p><b>insurer</b>: <a href=\"Organization-example-02.html\">Organization XYZ Insurance Co. Ltd.</a></p><h3>Insurances</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Coverage</b></td><td><b>Inforce</b></td><td><b>BenefitPeriod</b></td></tr><tr><td style=\"display: none\">*</td><td><a href=\"Coverage-example-01.html\">Coverage: identifier = https://xyzinsurance.in/policynumber/#235037120; status = active; type = PAY; subscriberId = ABC123456BI007; relationship = Self; period = (?) --&gt; 2026-03-17</a></td><td>true</td><td>2023-09-07 --&gt; 2026-08-07</td></tr></table></div>"
+  },
+  "status" : "active",
+  "purpose" : ["discovery"],
+  "patient" : {
+    "reference" : "Patient/example-01"
+  },
+  "created" : "2023-09-11",
+  "requestor" : {
+    "reference" : "Practitioner/example-01"
+  },
+  "request" : {
+    "reference" : "CoverageEligibilityRequest/discovery-example-01"
+  },
+  "outcome" : "complete",
+  "disposition" : "Policy is currently in-force.",
+  "insurer" : {
+    "reference" : "Organization/example-02"
+  },
+  "insurance" : [{
+    "coverage" : {
+      "reference" : "Coverage/example-01"
+    },
+    "inforce" : true,
+    "benefitPeriod" : {
+      "start" : "2023-09-07",
+      "end" : "2026-08-07"
+    }
+  }]
+}

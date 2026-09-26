@@ -1,0 +1,70 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "ndhm-plan-type",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem ndhm-plan-type</b></p><a name=\"ndhm-plan-type\"> </a><a name=\"hcndhm-plan-type\"> </a><a name=\"ndhm-plan-type-hi-IN\"> </a><p>This case-sensitive code system <code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-plan-type</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td style=\"white-space:nowrap\">01<a name=\"ndhm-plan-type-01\"> </a></td><td>Individual</td></tr><tr><td style=\"white-space:nowrap\">02<a name=\"ndhm-plan-type-02\"> </a></td><td>Individual Floater</td></tr><tr><td style=\"white-space:nowrap\">03<a name=\"ndhm-plan-type-03\"> </a></td><td>Group</td></tr><tr><td style=\"white-space:nowrap\">04<a name=\"ndhm-plan-type-04\"> </a></td><td>Group Floater</td></tr><tr><td style=\"white-space:nowrap\">05<a name=\"ndhm-plan-type-05\"> </a></td><td>Declaration</td></tr><tr><td style=\"white-space:nowrap\">06<a name=\"ndhm-plan-type-06\"> </a></td><td>Declaration Floater</td></tr><tr><td style=\"white-space:nowrap\">07<a name=\"ndhm-plan-type-07\"> </a></td><td>Declaration with Group Organiser</td></tr><tr><td style=\"white-space:nowrap\">08<a name=\"ndhm-plan-type-08\"> </a></td><td>Declaration Floater with Group Organiser</td></tr><tr><td style=\"white-space:nowrap\">99<a name=\"ndhm-plan-type-99\"> </a></td><td>Any Other Cover Type</td></tr></table></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-plan-type",
+  "version" : "6.5.0",
+  "name" : "PlanType",
+  "title" : "Plan Type",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-07-05",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : " This CodeSystem contains a set of codes that can be utilized to categorize the type of insurance plans.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "caseSensitive" : true,
+  "content" : "complete",
+  "count" : 9,
+  "concept" : [{
+    "code" : "01",
+    "display" : "Individual"
+  },
+  {
+    "code" : "02",
+    "display" : "Individual Floater"
+  },
+  {
+    "code" : "03",
+    "display" : "Group"
+  },
+  {
+    "code" : "04",
+    "display" : "Group Floater"
+  },
+  {
+    "code" : "05",
+    "display" : "Declaration"
+  },
+  {
+    "code" : "06",
+    "display" : "Declaration Floater"
+  },
+  {
+    "code" : "07",
+    "display" : "Declaration with Group Organiser"
+  },
+  {
+    "code" : "08",
+    "display" : "Declaration Floater with Group Organiser"
+  },
+  {
+    "code" : "99",
+    "display" : "Any Other Cover Type"
+  }]
+}

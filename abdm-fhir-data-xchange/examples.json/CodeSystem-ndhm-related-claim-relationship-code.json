@@ -1,0 +1,44 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "ndhm-related-claim-relationship-code",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem ndhm-related-claim-relationship-code</b></p><a name=\"ndhm-related-claim-relationship-code\"> </a><a name=\"hcndhm-related-claim-relationship-code\"> </a><a name=\"ndhm-related-claim-relationship-code-hi-IN\"> </a><p>This case-sensitive code system <code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-related-claim-relationship-code</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td><td><b>Definition</b></td></tr><tr><td style=\"white-space:nowrap\">enhancement<a name=\"ndhm-related-claim-relationship-code-enhancement\"> </a></td><td>Enhancement</td><td>Enhancement in a claim process means asking for more money after realizing the initial estimate wasn't enough to cover the actual costs.</td></tr><tr><td style=\"white-space:nowrap\">settlement<a name=\"ndhm-related-claim-relationship-code-settlement\"> </a></td><td>Settlement</td><td>Settlement in a claim is when the insurance pays the final agreed-upon amount to cover all the costs, marking the end of the reimbursement process.</td></tr></table></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-related-claim-relationship-code",
+  "version" : "6.5.0",
+  "name" : "RelatedClaimRelationship",
+  "title" : "Related Claim Relationship",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-07-05",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This CodeSystem contains a set of codes that can be use to show the relationship between claims.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "caseSensitive" : true,
+  "content" : "complete",
+  "count" : 2,
+  "concept" : [{
+    "code" : "enhancement",
+    "display" : "Enhancement",
+    "definition" : "Enhancement in a claim process means asking for more money after realizing the initial estimate wasn't enough to cover the actual costs."
+  },
+  {
+    "code" : "settlement",
+    "display" : "Settlement",
+    "definition" : "Settlement in a claim is when the insurance pays the final agreed-upon amount to cover all the costs, marking the end of the reimbursement process."
+  }]
+}

@@ -1,0 +1,36 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-insuranceplan-type",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-insuranceplan-type</b></p><a name=\"ndhm-insuranceplan-type\"> </a><a name=\"hcndhm-insuranceplan-type\"> </a><a name=\"ndhm-insuranceplan-type-hi-IN\"> </a><ul><li>Include all codes defined in <a href=\"CodeSystem-ndhm-insuranceplan-type.html\"><code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-insuranceplan-type</code></a></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-insuranceplan-type",
+  "version" : "6.5.0",
+  "name" : "InsurancePlanType",
+  "title" : "InsurancePlan Type",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-07-05",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "The Valueset comprises codes employed for categorizing different Insurance product. It is created by referring the Health Insurance Data Reporting Manual provided by the Insurance Information Bureau of India (IIB). For more information, visit IIB's official website: https://iib.gov.in or access the manual directly at: https://healthapp.iib.gov.in/IIB/datamanuals/hidmanual08.pdf.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "compose" : {
+    "include" : [{
+      "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-insuranceplan-type"
+    }]
+  }
+}

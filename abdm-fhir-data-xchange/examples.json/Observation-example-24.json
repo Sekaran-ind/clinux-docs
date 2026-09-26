@@ -1,0 +1,35 @@
+{
+  "resourceType" : "Observation",
+  "id" : "example-24",
+  "meta" : {
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationGeneralAssessment"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: Observation example-24</b></p><a name=\"example-24\"> </a><a name=\"hcexample-24\"> </a><a name=\"example-24-hi-IN\"> </a><p><b>status</b>: Final</p><p><b>code</b>: <span title=\"Codes:{http://loinc.org 8693-4}\">Mental status</span></p><p><b>subject</b>: <a href=\"Patient-example-01.html\">ABC Male, DoB: 1981-01-12 ( Medical record number: 22-7225-4829-5255)</a></p><p><b>effective</b>: 2020-09-29</p><p><b>performer</b>: <a href=\"Organization-example-01.html\">Organization XYZ Lab Pvt.Ltd.</a></p><p><b>value</b>: <span title=\"Codes:{http://snomed.info/sct 247805009}\">Anxiety and fear</span></p></div>"
+  },
+  "status" : "final",
+  "code" : {
+    "coding" : [{
+      "system" : "http://loinc.org",
+      "code" : "8693-4",
+      "display" : "Mental status"
+    }],
+    "text" : "Mental status"
+  },
+  "subject" : {
+    "reference" : "Patient/example-01"
+  },
+  "effectiveDateTime" : "2020-09-29",
+  "performer" : [{
+    "reference" : "Organization/example-01"
+  }],
+  "valueCodeableConcept" : {
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "247805009",
+      "display" : "Anxiety and fear"
+    }],
+    "text" : "Anxiety and fear"
+  }
+}

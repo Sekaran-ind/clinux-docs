@@ -1,0 +1,47 @@
+{
+  "resourceType" : "Observation",
+  "id" : "finding-example-01",
+  "meta" : {
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/Observation"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: Observation finding-example-01</b></p><a name=\"finding-example-01\"> </a><a name=\"hcfinding-example-01\"> </a><a name=\"finding-example-01-hi-IN\"> </a><p><b>status</b>: Final</p><p><b>code</b>: <span title=\"Codes:{http://snomed.info/sct 20716004}\">Respiratory rate normal</span></p><p><b>subject</b>: <a href=\"Patient-example-01.html\">ABC Male, DoB: 1981-01-12 ( Medical record number: 22-7225-4829-5255)</a></p><p><b>effective</b>: 2020-09-29</p><p><b>performer</b>: <a href=\"Practitioner-example-01.html\">Practitioner Dr. DEF</a></p><p><b>value</b>: 18 breaths/minute<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM  code/min = '/min')</span></p><h3>ReferenceRanges</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Low</b></td><td><b>High</b></td></tr><tr><td style=\"display: none\">*</td><td>12 breaths/minute<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM  code/min = '/min')</span></td><td>20 breaths/minute<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM  code/min = '/min')</span></td></tr></table></div>"
+  },
+  "status" : "final",
+  "code" : {
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "20716004",
+      "display" : "Respiratory rate normal"
+    }],
+    "text" : "Respiratory rate normal"
+  },
+  "subject" : {
+    "reference" : "Patient/example-01"
+  },
+  "effectiveDateTime" : "2020-09-29",
+  "performer" : [{
+    "reference" : "Practitioner/example-01"
+  }],
+  "valueQuantity" : {
+    "value" : 18,
+    "unit" : "breaths/minute",
+    "system" : "http://unitsofmeasure.org",
+    "code" : "/min"
+  },
+  "referenceRange" : [{
+    "low" : {
+      "value" : 12,
+      "unit" : "breaths/minute",
+      "system" : "http://unitsofmeasure.org",
+      "code" : "/min"
+    },
+    "high" : {
+      "value" : 20,
+      "unit" : "breaths/minute",
+      "system" : "http://unitsofmeasure.org",
+      "code" : "/min"
+    }
+  }]
+}

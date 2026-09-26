@@ -1,0 +1,102 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "ndhm-coverage-type",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem ndhm-coverage-type</b></p><a name=\"ndhm-coverage-type\"> </a><a name=\"hcndhm-coverage-type\"> </a><a name=\"ndhm-coverage-type-hi-IN\"> </a><p>This case-sensitive code system <code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-coverage-type</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td style=\"white-space:nowrap\">00<a name=\"ndhm-coverage-type-00\"> </a></td><td>In Patient Hospitalization</td></tr><tr><td style=\"white-space:nowrap\">01<a name=\"ndhm-coverage-type-01\"> </a></td><td>Pre Hospitalization</td></tr><tr><td style=\"white-space:nowrap\">02<a name=\"ndhm-coverage-type-02\"> </a></td><td>Post Hospitalization</td></tr><tr><td style=\"white-space:nowrap\">03<a name=\"ndhm-coverage-type-03\"> </a></td><td>Local Ambulance</td></tr><tr><td style=\"white-space:nowrap\">04<a name=\"ndhm-coverage-type-04\"> </a></td><td>Living Donor Medical Costs</td></tr><tr><td style=\"white-space:nowrap\">05<a name=\"ndhm-coverage-type-05\"> </a></td><td>Annual Preventive Health Check up</td></tr><tr><td style=\"white-space:nowrap\">06<a name=\"ndhm-coverage-type-06\"> </a></td><td>Mental Illness Treatment</td></tr><tr><td style=\"white-space:nowrap\">07<a name=\"ndhm-coverage-type-07\"> </a></td><td>Rehabiliation</td></tr><tr><td style=\"white-space:nowrap\">08<a name=\"ndhm-coverage-type-08\"> </a></td><td>Modern Treatment method</td></tr><tr><td style=\"white-space:nowrap\">09<a name=\"ndhm-coverage-type-09\"> </a></td><td>Out patient</td></tr><tr><td style=\"white-space:nowrap\">10<a name=\"ndhm-coverage-type-10\"> </a></td><td>Lab pathelogy</td></tr><tr><td style=\"white-space:nowrap\">11<a name=\"ndhm-coverage-type-11\"> </a></td><td>Drugs and Medicines</td></tr><tr><td style=\"white-space:nowrap\">12<a name=\"ndhm-coverage-type-12\"> </a></td><td>Dental</td></tr><tr><td style=\"white-space:nowrap\">13<a name=\"ndhm-coverage-type-13\"> </a></td><td>Eye</td></tr><tr><td style=\"white-space:nowrap\">14<a name=\"ndhm-coverage-type-14\"> </a></td><td>Day Care</td></tr><tr><td style=\"white-space:nowrap\">15<a name=\"ndhm-coverage-type-15\"> </a></td><td>Daily-cash</td></tr><tr><td style=\"white-space:nowrap\">16<a name=\"ndhm-coverage-type-16\"> </a></td><td>Major illness/critical illness</td></tr></table></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-coverage-type",
+  "version" : "6.5.0",
+  "name" : "CoverageType",
+  "title" : "Coverage Type",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-07-05",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This CodeSystem consists of a set of codes that can be utilized to categorize the insurance coverage type.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "caseSensitive" : true,
+  "content" : "complete",
+  "count" : 17,
+  "concept" : [{
+    "code" : "00",
+    "display" : "In Patient Hospitalization"
+  },
+  {
+    "code" : "01",
+    "display" : "Pre Hospitalization"
+  },
+  {
+    "code" : "02",
+    "display" : "Post Hospitalization"
+  },
+  {
+    "code" : "03",
+    "display" : "Local Ambulance"
+  },
+  {
+    "code" : "04",
+    "display" : "Living Donor Medical Costs"
+  },
+  {
+    "code" : "05",
+    "display" : "Annual Preventive Health Check up"
+  },
+  {
+    "code" : "06",
+    "display" : "Mental Illness Treatment"
+  },
+  {
+    "code" : "07",
+    "display" : "Rehabiliation"
+  },
+  {
+    "code" : "08",
+    "display" : "Modern Treatment method"
+  },
+  {
+    "code" : "09",
+    "display" : "Out patient"
+  },
+  {
+    "code" : "10",
+    "display" : "Lab pathelogy"
+  },
+  {
+    "code" : "11",
+    "display" : "Drugs and Medicines"
+  },
+  {
+    "code" : "12",
+    "display" : "Dental"
+  },
+  {
+    "code" : "13",
+    "display" : "Eye"
+  },
+  {
+    "code" : "14",
+    "display" : "Day Care"
+  },
+  {
+    "code" : "15",
+    "display" : "Daily-cash"
+  },
+  {
+    "code" : "16",
+    "display" : "Major illness/critical illness"
+  }]
+}

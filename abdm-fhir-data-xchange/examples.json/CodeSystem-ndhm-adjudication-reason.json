@@ -1,0 +1,214 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "ndhm-adjudication-reason",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem ndhm-adjudication-reason</b></p><a name=\"ndhm-adjudication-reason\"> </a><a name=\"hcndhm-adjudication-reason\"> </a><a name=\"ndhm-adjudication-reason-hi-IN\"> </a><p>This case-sensitive code system <code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-adjudication-reason</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td style=\"white-space:nowrap\">claimError-1<a name=\"ndhm-adjudication-reason-claimError-1\"> </a></td><td>The claimed service is not covered under the policy, and therefore, the amount is deducted.</td></tr><tr><td style=\"white-space:nowrap\">claimError-2<a name=\"ndhm-adjudication-reason-claimError-2\"> </a></td><td>The claimed amount exceeds the maximum coverage limit, leading to a deduction.</td></tr><tr><td style=\"white-space:nowrap\">claimError-3<a name=\"ndhm-adjudication-reason-claimError-3\"> </a></td><td>The same claim has been submitted more than once, resulting in a deduction.</td></tr><tr><td style=\"white-space:nowrap\">claimError-4<a name=\"ndhm-adjudication-reason-claimError-4\"> </a></td><td>The claim needs to be coordinated with another insurance policy, leading to a deduction.</td></tr><tr><td style=\"white-space:nowrap\">claimError-5<a name=\"ndhm-adjudication-reason-claimError-5\"> </a></td><td>The claim lacks essential documentation, leading to a partial deduction until proper documents are provided.</td></tr><tr><td style=\"white-space:nowrap\">claimError-6<a name=\"ndhm-adjudication-reason-claimError-6\"> </a></td><td>The claim amount is subject to the policy deductible, leading to a deduction.</td></tr><tr><td style=\"white-space:nowrap\">claimError-7<a name=\"ndhm-adjudication-reason-claimError-7\"> </a></td><td>The claimant is responsible for a portion of the service cost due to co-payment or coinsurance.</td></tr><tr><td style=\"white-space:nowrap\">claimError-8<a name=\"ndhm-adjudication-reason-claimError-8\"> </a></td><td>There is an error in the claim submission, leading to a deduction until the correct information is provided.</td></tr><tr><td style=\"white-space:nowrap\">claimError-9<a name=\"ndhm-adjudication-reason-claimError-9\"> </a></td><td>The claim is determined to be fraudulent, leading to a complete/partial deduction of the amount.</td></tr><tr><td style=\"white-space:nowrap\">claimError-10<a name=\"ndhm-adjudication-reason-claimError-10\"> </a></td><td>The claimed service is deemed medically unnecessary, leading to a deduction.</td></tr><tr><td style=\"white-space:nowrap\">claimError-11<a name=\"ndhm-adjudication-reason-claimError-11\"> </a></td><td>The claimant has reached the maximum benefit limit, resulting in a deduction.</td></tr><tr><td style=\"white-space:nowrap\">claimError-12<a name=\"ndhm-adjudication-reason-claimError-12\"> </a></td><td>The claim was not submitted within the required time frame, leading to a deduction.</td></tr><tr><td style=\"white-space:nowrap\">claimError-13<a name=\"ndhm-adjudication-reason-claimError-13\"> </a></td><td>The claimed service has already been paid for, leading to a deduction.</td></tr><tr><td style=\"white-space:nowrap\">claimError-14<a name=\"ndhm-adjudication-reason-claimError-14\"> </a></td><td>Claim has been rejected due to less tha 24 hours of hospitalization</td></tr><tr><td style=\"white-space:nowrap\">claimError-15<a name=\"ndhm-adjudication-reason-claimError-15\"> </a></td><td>Claim has been rejected as the Package is Reserved to Public Hospital.</td></tr><tr><td style=\"white-space:nowrap\">claimError-16<a name=\"ndhm-adjudication-reason-claimError-16\"> </a></td><td>Claim has been closed due to Incomplete submission of documents by hospital after multiple queries.</td></tr><tr><td style=\"white-space:nowrap\">claimError-17<a name=\"ndhm-adjudication-reason-claimError-17\"> </a></td><td>Claim has been rejected as there was misrepresentation of bed category booked.</td></tr><tr><td style=\"white-space:nowrap\">claimError-18<a name=\"ndhm-adjudication-reason-claimError-18\"> </a></td><td>Claim has been rejected due to Outside Scope of cover (Exclusions as per scheme).</td></tr><tr><td style=\"white-space:nowrap\">claimError-19<a name=\"ndhm-adjudication-reason-claimError-19\"> </a></td><td>Claim has been rejected as the claim was found be False/Fraudulent.</td></tr><tr><td style=\"white-space:nowrap\">claimError-20<a name=\"ndhm-adjudication-reason-claimError-20\"> </a></td><td>Claim has been rejected due to mismatch of package and disease/diagnosis/treatment.</td></tr><tr><td style=\"white-space:nowrap\">claimError-21<a name=\"ndhm-adjudication-reason-claimError-21\"> </a></td><td>Claim has been rejected due to hospital not empanelled for this specialty.</td></tr><tr><td style=\"white-space:nowrap\">claimError-22<a name=\"ndhm-adjudication-reason-claimError-22\"> </a></td><td>Claim has been closed due to non submission of the documents.</td></tr><tr><td style=\"white-space:nowrap\">claimError-23<a name=\"ndhm-adjudication-reason-claimError-23\"> </a></td><td>Claim rejected as the treatment provided does not support the blocked package, request you to book a fresh relevant package.</td></tr><tr><td style=\"white-space:nowrap\">claimError-24<a name=\"ndhm-adjudication-reason-claimError-24\"> </a></td><td>Claim has been closed as the photo of the operative site is not available.</td></tr><tr><td style=\"white-space:nowrap\">claimError-25<a name=\"ndhm-adjudication-reason-claimError-25\"> </a></td><td>Claim has been rejected due to apparent manipulation in medical record.</td></tr><tr><td style=\"white-space:nowrap\">claimError-26<a name=\"ndhm-adjudication-reason-claimError-26\"> </a></td><td>Claim has been rejected as the hospital expenses have been paid by patient.</td></tr><tr><td style=\"white-space:nowrap\">claimError-27<a name=\"ndhm-adjudication-reason-claimError-27\"> </a></td><td>Claim has been closed due missing Pre-Auth patient's photo/post operative photo/After discharge photo.</td></tr><tr><td style=\"white-space:nowrap\">claimError-28<a name=\"ndhm-adjudication-reason-claimError-28\"> </a></td><td>Claim has been closed as referral letter mandatory for package selected has not been provided.</td></tr><tr><td style=\"white-space:nowrap\">claimError-29<a name=\"ndhm-adjudication-reason-claimError-29\"> </a></td><td>Claim has been rejected as the need for hospitalization was not justified based on the available documents.</td></tr><tr><td style=\"white-space:nowrap\">claimError-30<a name=\"ndhm-adjudication-reason-claimError-30\"> </a></td><td>Claim rejected as the treatment provided does not support the blocked package, request you to book a fresh relevant package.</td></tr><tr><td style=\"white-space:nowrap\">covered<a name=\"ndhm-adjudication-reason-covered\"> </a></td><td>Product or Service requested is covered by the policy.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-1<a name=\"ndhm-adjudication-reason-preauthError-1\"> </a></td><td>Pre-Auth has been rejected as the diagnosis is outside Scope of cover (Exclusions as per scheme).</td></tr><tr><td style=\"white-space:nowrap\">preauthError-2<a name=\"ndhm-adjudication-reason-preauthError-2\"> </a></td><td>Pre-auth has been rejected due to delay in raising enhancement requests.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-3<a name=\"ndhm-adjudication-reason-preauthError-3\"> </a></td><td>Pre-Auth has been rejected as it was found to be False/Fraudulent.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-4<a name=\"ndhm-adjudication-reason-preauthError-4\"> </a></td><td>Pre-Auth has been closed due to delay in preauth Intimation (as per state guidelines).</td></tr><tr><td style=\"white-space:nowrap\">preauthError-5<a name=\"ndhm-adjudication-reason-preauthError-5\"> </a></td><td>Pre-Auth has been rejected as the Hospital is not empanelled for this specialty.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-6<a name=\"ndhm-adjudication-reason-preauthError-6\"> </a></td><td>Pre- Auth has been rejected due to mismatch in dialysis records.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-7<a name=\"ndhm-adjudication-reason-preauthError-7\"> </a></td><td>Enhancement request rejected as the medical necessity of enhancement request not met.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-8<a name=\"ndhm-adjudication-reason-preauthError-8\"> </a></td><td>Pre-Auth rejected as the medical necessity of ICU bed category not met.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-9<a name=\"ndhm-adjudication-reason-preauthError-9\"> </a></td><td>Pre-Auth has been rejected as the package selected is reserved for public hospital.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-10<a name=\"ndhm-adjudication-reason-preauthError-10\"> </a></td><td>Pre-Auth has been closed due to non submission of mandatory document as per STG.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-11<a name=\"ndhm-adjudication-reason-preauthError-11\"> </a></td><td>Pre-Auth has been rejected as the Surgery was done before Pre-auth Approval.</td></tr><tr><td style=\"white-space:nowrap\">preauthError-12<a name=\"ndhm-adjudication-reason-preauthError-12\"> </a></td><td>Pre-auth enhancement rejected due to missing patient photo to depict bed category.</td></tr><tr><td style=\"white-space:nowrap\">Queried<a name=\"ndhm-adjudication-reason-Queried\"> </a></td><td>Product or Service requested is queried for clarification.</td></tr><tr><td style=\"white-space:nowrap\">other<a name=\"ndhm-adjudication-reason-other\"> </a></td><td>Others</td></tr></table></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-adjudication-reason",
+  "version" : "6.5.0",
+  "name" : "AdjudicationReason",
+  "title" : "Adjudication Reason",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2024-09-20",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This CodeSystem contains code to captures reasons associated with adjudication of each items while claim processing.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "caseSensitive" : true,
+  "content" : "complete",
+  "count" : 45,
+  "concept" : [{
+    "code" : "claimError-1",
+    "display" : "The claimed service is not covered under the policy, and therefore, the amount is deducted."
+  },
+  {
+    "code" : "claimError-2",
+    "display" : "The claimed amount exceeds the maximum coverage limit, leading to a deduction."
+  },
+  {
+    "code" : "claimError-3",
+    "display" : "The same claim has been submitted more than once, resulting in a deduction."
+  },
+  {
+    "code" : "claimError-4",
+    "display" : "The claim needs to be coordinated with another insurance policy, leading to a deduction."
+  },
+  {
+    "code" : "claimError-5",
+    "display" : "The claim lacks essential documentation, leading to a partial deduction until proper documents are provided."
+  },
+  {
+    "code" : "claimError-6",
+    "display" : "The claim amount is subject to the policy deductible, leading to a deduction."
+  },
+  {
+    "code" : "claimError-7",
+    "display" : "The claimant is responsible for a portion of the service cost due to co-payment or coinsurance."
+  },
+  {
+    "code" : "claimError-8",
+    "display" : "There is an error in the claim submission, leading to a deduction until the correct information is provided."
+  },
+  {
+    "code" : "claimError-9",
+    "display" : "The claim is determined to be fraudulent, leading to a complete/partial deduction of the amount."
+  },
+  {
+    "code" : "claimError-10",
+    "display" : "The claimed service is deemed medically unnecessary, leading to a deduction."
+  },
+  {
+    "code" : "claimError-11",
+    "display" : "The claimant has reached the maximum benefit limit, resulting in a deduction."
+  },
+  {
+    "code" : "claimError-12",
+    "display" : "The claim was not submitted within the required time frame, leading to a deduction."
+  },
+  {
+    "code" : "claimError-13",
+    "display" : "The claimed service has already been paid for, leading to a deduction."
+  },
+  {
+    "code" : "claimError-14",
+    "display" : "Claim has been rejected due to less tha 24 hours of hospitalization"
+  },
+  {
+    "code" : "claimError-15",
+    "display" : "Claim has been rejected as the Package is Reserved to Public Hospital."
+  },
+  {
+    "code" : "claimError-16",
+    "display" : "Claim has been closed due to Incomplete submission of documents by hospital after multiple queries."
+  },
+  {
+    "code" : "claimError-17",
+    "display" : "Claim has been rejected as there was misrepresentation of bed category booked."
+  },
+  {
+    "code" : "claimError-18",
+    "display" : "Claim has been rejected due to Outside Scope of cover (Exclusions as per scheme)."
+  },
+  {
+    "code" : "claimError-19",
+    "display" : "Claim has been rejected as the claim was found be False/Fraudulent."
+  },
+  {
+    "code" : "claimError-20",
+    "display" : "Claim has been rejected due to mismatch of package and disease/diagnosis/treatment."
+  },
+  {
+    "code" : "claimError-21",
+    "display" : "Claim has been rejected due to hospital not empanelled for this specialty."
+  },
+  {
+    "code" : "claimError-22",
+    "display" : "Claim has been closed due to non submission of the documents."
+  },
+  {
+    "code" : "claimError-23",
+    "display" : "Claim rejected as the treatment provided does not support the blocked package, request you to book a fresh relevant package."
+  },
+  {
+    "code" : "claimError-24",
+    "display" : "Claim has been closed as the photo of the operative site is not available."
+  },
+  {
+    "code" : "claimError-25",
+    "display" : "Claim has been rejected due to apparent manipulation in medical record."
+  },
+  {
+    "code" : "claimError-26",
+    "display" : "Claim has been rejected as the hospital expenses have been paid by patient."
+  },
+  {
+    "code" : "claimError-27",
+    "display" : "Claim has been closed due missing Pre-Auth patient's photo/post operative photo/After discharge photo."
+  },
+  {
+    "code" : "claimError-28",
+    "display" : "Claim has been closed as referral letter mandatory for package selected has not been provided."
+  },
+  {
+    "code" : "claimError-29",
+    "display" : "Claim has been rejected as the need for hospitalization was not justified based on the available documents."
+  },
+  {
+    "code" : "claimError-30",
+    "display" : "Claim rejected as the treatment provided does not support the blocked package, request you to book a fresh relevant package."
+  },
+  {
+    "code" : "covered",
+    "display" : "Product or Service requested is covered by the policy."
+  },
+  {
+    "code" : "preauthError-1",
+    "display" : "Pre-Auth has been rejected as the diagnosis is outside Scope of cover (Exclusions as per scheme)."
+  },
+  {
+    "code" : "preauthError-2",
+    "display" : "Pre-auth has been rejected due to delay in raising enhancement requests."
+  },
+  {
+    "code" : "preauthError-3",
+    "display" : "Pre-Auth has been rejected as it was found to be False/Fraudulent."
+  },
+  {
+    "code" : "preauthError-4",
+    "display" : "Pre-Auth has been closed due to delay in preauth Intimation (as per state guidelines)."
+  },
+  {
+    "code" : "preauthError-5",
+    "display" : "Pre-Auth has been rejected as the Hospital is not empanelled for this specialty."
+  },
+  {
+    "code" : "preauthError-6",
+    "display" : "Pre- Auth has been rejected due to mismatch in dialysis records."
+  },
+  {
+    "code" : "preauthError-7",
+    "display" : "Enhancement request rejected as the medical necessity of enhancement request not met."
+  },
+  {
+    "code" : "preauthError-8",
+    "display" : "Pre-Auth rejected as the medical necessity of ICU bed category not met."
+  },
+  {
+    "code" : "preauthError-9",
+    "display" : "Pre-Auth has been rejected as the package selected is reserved for public hospital."
+  },
+  {
+    "code" : "preauthError-10",
+    "display" : "Pre-Auth has been closed due to non submission of mandatory document as per STG."
+  },
+  {
+    "code" : "preauthError-11",
+    "display" : "Pre-Auth has been rejected as the Surgery was done before Pre-auth Approval."
+  },
+  {
+    "code" : "preauthError-12",
+    "display" : "Pre-auth enhancement rejected due to missing patient photo to depict bed category."
+  },
+  {
+    "code" : "Queried",
+    "display" : "Product or Service requested is queried for clarification."
+  },
+  {
+    "code" : "other",
+    "display" : "Others"
+  }]
+}

@@ -1,0 +1,39 @@
+{
+  "resourceType" : "ChargeItem",
+  "id" : "Consultation-example-01",
+  "meta" : {
+    "versionId" : "1",
+    "lastUpdated" : "2023-08-22T09:40:00.181+05:30",
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/ChargeItem"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ChargeItem Consultation-example-01</b></p><a name=\"Consultation-example-01\"> </a><a name=\"hcConsultation-example-01\"> </a><a name=\"Consultation-example-01-hi-IN\"> </a><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">version: 1; Last updated: 2023-08-22 09:40:00+0530</p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ChargeItem.html\">ChargeItem</a></p></div><p><b>status</b>: Billed</p><p><b>code</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-billing-codes 00}\">Consultation</span></p><p><b>subject</b>: <a href=\"Patient-example-01.html\">ABC Male, DoB: 1981-01-12 ( Medical record number: 22-7225-4829-5255)</a></p><h3>Performers</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Actor</b></td></tr><tr><td style=\"display: none\">*</td><td><a href=\"Practitioner-example-01.html\">Practitioner Dr. DEF</a></td></tr></table><p><b>quantity</b>: 1</p><p><b>product</b>: <span title=\"Codes:{http://snomed.info/sct 303931008}\">Plain X-ray of lung (procedure)</span></p></div>"
+  },
+  "status" : "billed",
+  "code" : {
+    "coding" : [{
+      "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-billing-codes",
+      "code" : "00",
+      "display" : "Consultation"
+    }]
+  },
+  "subject" : {
+    "reference" : "Patient/example-01"
+  },
+  "performer" : [{
+    "actor" : {
+      "reference" : "Practitioner/example-01"
+    }
+  }],
+  "quantity" : {
+    "value" : 1
+  },
+  "productCodeableConcept" : {
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "303931008",
+      "display" : "Plain X-ray of lung (procedure)"
+    }]
+  }
+}

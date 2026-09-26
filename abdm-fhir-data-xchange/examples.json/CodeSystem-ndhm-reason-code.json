@@ -1,0 +1,62 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "ndhm-reason-code",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem ndhm-reason-code</b></p><a name=\"ndhm-reason-code\"> </a><a name=\"hcndhm-reason-code\"> </a><a name=\"ndhm-reason-code-hi-IN\"> </a><p>This case-sensitive code system <code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td style=\"white-space:nowrap\">partialpayment<a name=\"ndhm-reason-code-partialpayment\"> </a></td><td>Reprocess request due to partial payment by payer</td></tr><tr><td style=\"white-space:nowrap\">erroneousclaim<a name=\"ndhm-reason-code-erroneousclaim\"> </a></td><td>Reprocess request due to erroneous claim submission by provider</td></tr><tr><td style=\"white-space:nowrap\">claimrejected<a name=\"ndhm-reason-code-claimrejected\"> </a></td><td>Reprocess request due to claim rejected by payer</td></tr><tr><td style=\"white-space:nowrap\">referred<a name=\"ndhm-reason-code-referred\"> </a></td><td>Referred to another hospital</td></tr><tr><td style=\"white-space:nowrap\">erroneousregistration<a name=\"ndhm-reason-code-erroneousregistration\"> </a></td><td>Beneficiary registered by mistakenly for a given policy</td></tr><tr><td style=\"white-space:nowrap\">wrongdiagnosis<a name=\"ndhm-reason-code-wrongdiagnosis\"> </a></td><td>Additional facts were diagnosed during treatment.</td></tr><tr><td style=\"white-space:nowrap\">treatmentplanchanged<a name=\"ndhm-reason-code-treatmentplanchanged\"> </a></td><td>Treatment plan changed during hospitalization.</td></tr></table></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code",
+  "version" : "6.5.0",
+  "name" : "ReasonCode",
+  "title" : "Reason Code",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2024-09-20",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This CodeSystem contains codes to captures reasons associated with task processing.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "caseSensitive" : true,
+  "content" : "complete",
+  "count" : 7,
+  "concept" : [{
+    "code" : "partialpayment",
+    "display" : "Reprocess request due to partial payment by payer"
+  },
+  {
+    "code" : "erroneousclaim",
+    "display" : "Reprocess request due to erroneous claim submission by provider"
+  },
+  {
+    "code" : "claimrejected",
+    "display" : "Reprocess request due to claim rejected by payer"
+  },
+  {
+    "code" : "referred",
+    "display" : "Referred to another hospital"
+  },
+  {
+    "code" : "erroneousregistration",
+    "display" : "Beneficiary registered by mistakenly for a given policy"
+  },
+  {
+    "code" : "wrongdiagnosis",
+    "display" : "Additional facts were diagnosed during treatment."
+  },
+  {
+    "code" : "treatmentplanchanged",
+    "display" : "Treatment plan changed during hospitalization."
+  }]
+}

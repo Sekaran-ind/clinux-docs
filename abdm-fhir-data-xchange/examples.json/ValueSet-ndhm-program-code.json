@@ -1,0 +1,36 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-program-code",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-program-code</b></p><a name=\"ndhm-program-code\"> </a><a name=\"hcndhm-program-code\"> </a><a name=\"ndhm-program-code-hi-IN\"> </a><ul><li>Include all codes defined in <a href=\"CodeSystem-ndhm-program-code.html\"><code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-program-code</code></a></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-program-code",
+  "version" : "6.5.0",
+  "name" : "ProgramCode",
+  "title" : "Program Code",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2022-09-13",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : " This Valueset contains set of codes that can be used to classify groupings of service-types/specialties.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "compose" : {
+    "include" : [{
+      "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-program-code"
+    }]
+  }
+}

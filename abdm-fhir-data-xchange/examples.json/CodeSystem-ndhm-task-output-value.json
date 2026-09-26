@@ -1,0 +1,64 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "ndhm-task-output-value",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem ndhm-task-output-value</b></p><a name=\"ndhm-task-output-value\"> </a><a name=\"hcndhm-task-output-value\"> </a><a name=\"ndhm-task-output-value-hi-IN\"> </a><p>This case-sensitive code system <code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td><td><b>Definition</b></td></tr><tr><td style=\"white-space:nowrap\">paymentack<a name=\"ndhm-task-output-value-paymentack\"> </a></td><td>Payment is acknowledged</td><td>The payment associated with the task has been acknowledged by the relevant party.</td></tr><tr><td style=\"white-space:nowrap\">claimcancelled<a name=\"ndhm-task-output-value-claimcancelled\"> </a></td><td>Requested claim is cancelled</td><td>The requested claim associated with the task has been cancelled by the requester.</td></tr><tr><td style=\"white-space:nowrap\">claimreinitiated<a name=\"ndhm-task-output-value-claimreinitiated\"> </a></td><td>Requested claim is reinitiated</td><td>The requested claim associated with the task has been reinitiated by the requester.</td></tr><tr><td style=\"white-space:nowrap\">claimsuspended<a name=\"ndhm-task-output-value-claimsuspended\"> </a></td><td>Requested claim is suspended</td><td>The requested claim associated with the task has been suspended by the requester.</td></tr><tr><td style=\"white-space:nowrap\">taskak<a name=\"ndhm-task-output-value-taskak\"> </a></td><td>Requested task is acknowledged</td><td>The requested task has been acknowledged by the relevant party.</td></tr><tr><td style=\"white-space:nowrap\">taskdelivered<a name=\"ndhm-task-output-value-taskdelivered\"> </a></td><td>Requested task is delivered</td><td>The requested task has been completed and the output is delivered to the requester.</td></tr></table></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value",
+  "version" : "6.5.0",
+  "name" : "TaskOutputValue",
+  "title" : "Task Output Value",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-11-28",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This CodeSystem contains a set of codes that can be utilized to describe the Value of output in the task resource",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "caseSensitive" : true,
+  "content" : "complete",
+  "count" : 6,
+  "concept" : [{
+    "code" : "paymentack",
+    "display" : "Payment is acknowledged",
+    "definition" : "The payment associated with the task has been acknowledged by the relevant party."
+  },
+  {
+    "code" : "claimcancelled",
+    "display" : "Requested claim is cancelled",
+    "definition" : "The requested claim associated with the task has been cancelled by the requester."
+  },
+  {
+    "code" : "claimreinitiated",
+    "display" : "Requested claim is reinitiated",
+    "definition" : "The requested claim associated with the task has been reinitiated by the requester."
+  },
+  {
+    "code" : "claimsuspended",
+    "display" : "Requested claim is suspended",
+    "definition" : "The requested claim associated with the task has been suspended by the requester."
+  },
+  {
+    "code" : "taskak",
+    "display" : "Requested task is acknowledged",
+    "definition" : "The requested task has been acknowledged by the relevant party."
+  },
+  {
+    "code" : "taskdelivered",
+    "display" : "Requested task is delivered",
+    "definition" : "The requested task has been completed and the output is delivered to the requester."
+  }]
+}

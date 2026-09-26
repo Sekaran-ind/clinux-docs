@@ -1,0 +1,36 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-task-output-value",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-task-output-value</b></p><a name=\"ndhm-task-output-value\"> </a><a name=\"hcndhm-task-output-value\"> </a><a name=\"ndhm-task-output-value-hi-IN\"> </a><ul><li>Include all codes defined in <a href=\"CodeSystem-ndhm-task-output-value.html\"><code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value</code></a></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-task-output-value",
+  "version" : "6.5.0",
+  "name" : "TaskOutputValue",
+  "title" : "Task Output Value",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-11-28",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This ValueSet contains a set of codes that can be utilized to describe the value of output in the task resource",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "compose" : {
+    "include" : [{
+      "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value"
+    }]
+  }
+}

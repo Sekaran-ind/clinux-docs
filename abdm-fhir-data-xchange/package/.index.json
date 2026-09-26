@@ -1,0 +1,1138 @@
+{
+  "index-version" : 2,
+  "files" : [
+    {
+      "filename" : "ImplementationGuide-ndhm.in.json",
+      "resourceType" : "ImplementationGuide",
+      "id" : "ndhm.in",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ImplementationGuide/ndhm.in",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-adjudication-reason.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-adjudication-reason",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-adjudication-reason",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-benefit-type.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-benefit-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-benefit-type",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-billing-codes.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-billing-codes",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-billing-codes",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-claim-exclusion.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-claim-exclusion",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-claim-exclusion",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-coverage-type.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-coverage-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-coverage-type",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-form-code.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-form-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-form-code",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-identifier-type-code.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-identifier-type-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-insuranceplan-type.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-insuranceplan-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-insuranceplan-type",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-payment-type.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-payment-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-plan-type.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-plan-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-plan-type",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-price-components.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-price-components",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-program-code.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-program-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-program-code",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-reason-code.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-reason-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-related-claim-relationship-code.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-related-claim-relationship-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-related-claim-relationship-code",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-supportinginfo-category.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-supportinginfo-category",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-supportinginfo-code.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-supportinginfo-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-task-codes.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-task-codes",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-task-input-type-code.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-task-input-type-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-task-output-type.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-task-output-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-type",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "CodeSystem-ndhm-task-output-value.json",
+      "resourceType" : "CodeSystem",
+      "id" : "ndhm-task-output-value",
+      "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value",
+      "version" : "6.5.0",
+      "content" : "complete"
+    },
+    {
+      "filename" : "StructureDefinition-AllergyIntolerance.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "AllergyIntolerance",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/AllergyIntolerance",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "AllergyIntolerance",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Appointment.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Appointment",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Appointment",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Appointment",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Binary.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Binary",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Binary",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Binary",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-BrandName.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "BrandName",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/BrandName",
+      "version" : "6.5.0",
+      "kind" : "complex-type",
+      "type" : "Extension",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-CarePlan.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "CarePlan",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CarePlan",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "CarePlan",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ChargeItem.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ChargeItem",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ChargeItem",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "ChargeItem",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Claim-Condition.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Claim-Condition",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim-Condition",
+      "version" : "6.5.0",
+      "kind" : "complex-type",
+      "type" : "Extension",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Claim-Exclusion.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Claim-Exclusion",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim-Exclusion",
+      "version" : "6.5.0",
+      "kind" : "complex-type",
+      "type" : "Extension",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Claim-SupportingInfoRequirement.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Claim-SupportingInfoRequirement",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim-SupportingInfoRequirement",
+      "version" : "6.5.0",
+      "kind" : "complex-type",
+      "type" : "Extension",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Claim.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Claim",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Claim",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ClaimBundle.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ClaimBundle",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimBundle",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Bundle",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ClaimResponse.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ClaimResponse",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "ClaimResponse",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ClaimResponseBundle.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ClaimResponseBundle",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponseBundle",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Bundle",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Communication.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Communication",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Communication",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Communication",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-CommunicationRequest.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "CommunicationRequest",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CommunicationRequest",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "CommunicationRequest",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Condition.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Condition",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Condition",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Condition",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Coverage.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Coverage",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Coverage",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Coverage",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-CoverageEligibilityRequest.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "CoverageEligibilityRequest",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityRequest",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "CoverageEligibilityRequest",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-CoverageEligibilityRequestBundle.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "CoverageEligibilityRequestBundle",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityRequestBundle",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Bundle",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-CoverageEligibilityResponse.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "CoverageEligibilityResponse",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityResponse",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "CoverageEligibilityResponse",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-CoverageEligibilityResponseBundle.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "CoverageEligibilityResponseBundle",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityResponseBundle",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Bundle",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-DiagnosticReportImaging.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "DiagnosticReportImaging",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DiagnosticReportImaging",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "DiagnosticReport",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-DiagnosticReportLab.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "DiagnosticReportLab",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DiagnosticReportLab",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "DiagnosticReport",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-DiagnosticReportRecord.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "DiagnosticReportRecord",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DiagnosticReportRecord",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Composition",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-DischargeSummaryRecord.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "DischargeSummaryRecord",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DischargeSummaryRecord",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Composition",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-DocumentBundle.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "DocumentBundle",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Bundle",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-DocumentReference.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "DocumentReference",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentReference",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "DocumentReference",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Encounter.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Encounter",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Encounter",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Encounter",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-FamilyMemberHistory.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "FamilyMemberHistory",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/FamilyMemberHistory",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "FamilyMemberHistory",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-HealthDocumentRecord.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "HealthDocumentRecord",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/HealthDocumentRecord",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Composition",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ImagingStudy.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ImagingStudy",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ImagingStudy",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "ImagingStudy",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Immunization.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Immunization",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Immunization",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Immunization",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ImmunizationRecommendation.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ImmunizationRecommendation",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ImmunizationRecommendation",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "ImmunizationRecommendation",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ImmunizationRecord.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ImmunizationRecord",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ImmunizationRecord",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Composition",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-InsurancePlan.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "InsurancePlan",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/InsurancePlan",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "InsurancePlan",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-InsurancePlanBundle.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "InsurancePlanBundle",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/InsurancePlanBundle",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Bundle",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Invoice.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Invoice",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Invoice",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Invoice",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-InvoiceRecord.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "InvoiceRecord",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/InvoiceRecord",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Composition",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Media.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Media",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Media",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Media",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Medication.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Medication",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Medication",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Medication",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-MedicationRequest.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "MedicationRequest",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "MedicationRequest",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-MedicationStatement.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "MedicationStatement",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationStatement",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "MedicationStatement",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-OPConsultRecord.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "OPConsultRecord",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/OPConsultRecord",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Composition",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Observation.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Observation",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Observation",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Observation",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ObservationBodyMeasurement.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ObservationBodyMeasurement",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationBodyMeasurement",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Observation",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ObservationGeneralAssessment.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ObservationGeneralAssessment",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationGeneralAssessment",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Observation",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ObservationLifestyle.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ObservationLifestyle",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationLifestyle",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Observation",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ObservationPhysicalActivity.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ObservationPhysicalActivity",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationPhysicalActivity",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Observation",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ObservationVitalSigns.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ObservationVitalSigns",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationVitalSigns",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Observation",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ObservationWomenHealth.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ObservationWomenHealth",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ObservationWomenHealth",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Observation",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Organization.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Organization",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Organization",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Patient.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Patient",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Patient",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-PaymentNotice.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "PaymentNotice",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentNotice",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "PaymentNotice",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-PaymentReconciliation.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "PaymentReconciliation",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "PaymentReconciliation",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Practitioner.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Practitioner",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Practitioner",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-PractitionerRole.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "PractitionerRole",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PractitionerRole",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "PractitionerRole",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-PrescriptionRecord.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "PrescriptionRecord",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PrescriptionRecord",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Composition",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Procedure.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Procedure",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Procedure",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Procedure",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-ServiceRequest.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "ServiceRequest",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ServiceRequest",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "ServiceRequest",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Specimen.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Specimen",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Specimen",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Specimen",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-Task.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "Task",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Task",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-TaskBundle.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "TaskBundle",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Bundle",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "StructureDefinition-WellnessRecord.json",
+      "resourceType" : "StructureDefinition",
+      "id" : "WellnessRecord",
+      "url" : "https://nrces.in/ndhm/fhir/r4/StructureDefinition/WellnessRecord",
+      "version" : "6.5.0",
+      "kind" : "resource",
+      "type" : "Composition",
+      "derivation" : "constraint"
+    },
+    {
+      "filename" : "ValueSet-ndhm-adjudication-reason.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-adjudication-reason",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-adjudication-reason",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-alcohol-drinking-status.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-alcohol-drinking-status",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-alcohol-drinking-status",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-benefit-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-benefit-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-benefit-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-benefitcategory.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-benefitcategory",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-benefitcategory",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-body-measurement.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-body-measurement",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-body-measurement",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-care-team-qualification.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-care-team-qualification",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-care-team-qualification",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-care-team-role.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-care-team-role",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-care-team-role",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-chargeitem-types.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-chargeitem-types",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-chargeitem-types",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-claim-exclusion.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-claim-exclusion",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-claim-exclusion",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-claim-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-claim-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-claim-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-coverage-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-coverage-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-coverage-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-diagnosis-use.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-diagnosis-use",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-diagnosis-use",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-diagnostic-code.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-diagnostic-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-diagnostic-code",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-diagnostic-report-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-diagnostic-report-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-diagnostic-report-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-diagnostic-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-diagnostic-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-diagnostic-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-diet-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-diet-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-diet-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-encounter-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-encounter-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-encounter-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-form-code.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-form-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-form-code",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-general-assessment.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-general-assessment",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-general-assessment",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-general-well-being.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-general-well-being",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-general-well-being",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-identifier-type-code.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-identifier-type-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-identifier-type-code",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-insuranceplan-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-insuranceplan-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-insuranceplan-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-invoice-types.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-invoice-types",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-invoice-types",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-lifestyle.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-lifestyle",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-lifestyle",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-medicine-codes.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-medicine-codes",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-medicine-codes",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-mental-status.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-mental-status",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-mental-status",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-payment-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-payment-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-payment-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-physical-activity.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-physical-activity",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-physical-activity",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-plan-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-plan-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-plan-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-practitioner-role.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-practitioner-role",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-practitioner-role",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-price-components.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-price-components",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-price-components",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-productorservice.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-productorservice",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-productorservice",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-program-code.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-program-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-program-code",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-reason-code.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-reason-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-reason-code",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-related-claim-relationship-code.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-related-claim-relationship-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-related-claim-relationship-code",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-route-of-administration.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-route-of-administration",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-route-of-administration",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-specimen-types.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-specimen-types",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-specimen-types",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-supportinginfo-category.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-supportinginfo-category",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-category",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-supportinginfo-code.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-supportinginfo-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-task-codes.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-task-codes",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-task-codes",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-task-input-type-code.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-task-input-type-code",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-task-input-type-code",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-task-output-type.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-task-output-type",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-task-output-type",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-task-output-value.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-task-output-value",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-task-output-value",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-tobacco-chewing-status.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-tobacco-chewing-status",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-tobacco-chewing-status",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-tobacco-smoking-status.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-tobacco-smoking-status",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-tobacco-smoking-status",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-vaccine-codes.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-vaccine-codes",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-vaccine-codes",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-vital-signs.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-vital-signs",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-vital-signs",
+      "version" : "6.5.0"
+    },
+    {
+      "filename" : "ValueSet-ndhm-women-health.json",
+      "resourceType" : "ValueSet",
+      "id" : "ndhm-women-health",
+      "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-women-health",
+      "version" : "6.5.0"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-payment-type",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-payment-type</b></p><a name=\"ndhm-payment-type\"> </a><a name=\"hcndhm-payment-type\"> </a><a name=\"ndhm-payment-type-hi-IN\"> </a><p>This value set includes codes based on the following rules:</p><ul><li>Include all codes defined in <a href=\"CodeSystem-ndhm-payment-type.html\"><code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type</code></a></li><li>Include all codes defined in <a href=\"http://terminology.hl7.org/6.0.2/CodeSystem-payment-type.html\"><code>http://terminology.hl7.org/CodeSystem/payment-type</code></a></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-payment-type",
+  "version" : "6.5.0",
+  "name" : "PaymentType",
+  "title" : "Payment Type",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-11-28",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This ValueSet contains a set of codes that can be utilized to describe the type of payment",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "compose" : {
+    "include" : [{
+      "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type"
+    },
+    {
+      "system" : "http://terminology.hl7.org/CodeSystem/payment-type"
+    }]
+  }
+}

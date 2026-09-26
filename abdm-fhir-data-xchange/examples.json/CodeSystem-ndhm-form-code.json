@@ -1,0 +1,62 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "ndhm-form-code",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem ndhm-form-code</b></p><a name=\"ndhm-form-code\"> </a><a name=\"hcndhm-form-code\"> </a><a name=\"ndhm-form-code-hi-IN\"> </a><p>This case-sensitive code system <code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-form-code</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td style=\"white-space:nowrap\">preauthapproval<a name=\"ndhm-form-code-preauthapproval\"> </a></td><td>Approval letter for Pre-authorisation</td></tr><tr><td style=\"white-space:nowrap\">claimapproval<a name=\"ndhm-form-code-claimapproval\"> </a></td><td>Approval letter for claim settlement</td></tr><tr><td style=\"white-space:nowrap\">preauthdenial<a name=\"ndhm-form-code-preauthdenial\"> </a></td><td>Rejection letter for Pre-authorisation</td></tr><tr><td style=\"white-space:nowrap\">claimdenial<a name=\"ndhm-form-code-claimdenial\"> </a></td><td>Rejection letter for claim</td></tr><tr><td style=\"white-space:nowrap\">feedbackletter<a name=\"ndhm-form-code-feedbackletter\"> </a></td><td>Patient feedback form</td></tr><tr><td style=\"white-space:nowrap\">policydocument<a name=\"ndhm-form-code-policydocument\"> </a></td><td>Policy Document with terms and conditions</td></tr><tr><td style=\"white-space:nowrap\">dischargeapproval<a name=\"ndhm-form-code-dischargeapproval\"> </a></td><td>Provisional approval of claim for the discharge</td></tr></table></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-form-code",
+  "version" : "6.5.0",
+  "name" : "FormCode",
+  "title" : "Form Code",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2024-09-20",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This CodeSystem contains codes which specify type of document attached with as form.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "caseSensitive" : true,
+  "content" : "complete",
+  "count" : 7,
+  "concept" : [{
+    "code" : "preauthapproval",
+    "display" : "Approval letter for Pre-authorisation"
+  },
+  {
+    "code" : "claimapproval",
+    "display" : "Approval letter for claim settlement"
+  },
+  {
+    "code" : "preauthdenial",
+    "display" : "Rejection letter for Pre-authorisation"
+  },
+  {
+    "code" : "claimdenial",
+    "display" : "Rejection letter for claim"
+  },
+  {
+    "code" : "feedbackletter",
+    "display" : "Patient feedback form"
+  },
+  {
+    "code" : "policydocument",
+    "display" : "Policy Document with terms and conditions"
+  },
+  {
+    "code" : "dischargeapproval",
+    "display" : "Provisional approval of claim for the discharge"
+  }]
+}

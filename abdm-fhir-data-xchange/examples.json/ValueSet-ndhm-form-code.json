@@ -1,0 +1,36 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-form-code",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-form-code</b></p><a name=\"ndhm-form-code\"> </a><a name=\"hcndhm-form-code\"> </a><a name=\"ndhm-form-code-hi-IN\"> </a><ul><li>Include all codes defined in <a href=\"CodeSystem-ndhm-form-code.html\"><code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-form-code</code></a></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-form-code",
+  "version" : "6.5.0",
+  "name" : "FormCode",
+  "title" : "Form Code",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-11-28",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This ValueSet contains a set of codes which specify type of document attached with as form.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "compose" : {
+    "include" : [{
+      "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-form-code"
+    }]
+  }
+}

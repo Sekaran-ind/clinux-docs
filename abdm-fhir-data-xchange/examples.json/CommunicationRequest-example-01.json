@@ -1,0 +1,50 @@
+{
+  "resourceType" : "CommunicationRequest",
+  "id" : "example-01",
+  "meta" : {
+    "versionId" : "1",
+    "lastUpdated" : "2023-09-07T14:58:58.181+05:30",
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/CommunicationRequest"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CommunicationRequest example-01</b></p><a name=\"example-01\"> </a><a name=\"hcexample-01\"> </a><a name=\"example-01-hi-IN\"> </a><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">version: 1; Last updated: 2023-09-07 14:58:58+0530</p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-CommunicationRequest.html\">CommunicationRequest</a></p></div><p><b>identifier</b>: 4524657454</p><p><b>basedOn</b>: <a href=\"Claim-Claim-preauthorization-example-01.html\">Claim: identifier = 7612345; status = active; type = Inpatient care management (procedure); subType = Emergency Claim; use = preauthorization; billablePeriod = 2025-03-07 11:01:00+0500 --&gt; 2025-04-07 11:01:00+0500; created = 2025-03-08 11:01:00+0500; priority = Normal</a></p><p><b>status</b>: Active</p><p><b>category</b>: <span title=\"Codes:{http://terminology.hl7.org/CodeSystem/communication-category alert}\">Alert</span></p><p><b>priority</b>: Routine</p><h3>Payloads</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Content[x]</b></td></tr><tr><td style=\"display: none\">*</td><td>Please provide the Angeography report to support your Claim# DEF5647.</td></tr></table><p><b>authoredOn</b>: 2023-12-08 08:25:05+1000</p><p><b>requester</b>: <a href=\"Organization-example-02.html\">Organization XYZ Insurance Co. Ltd.</a></p><p><b>recipient</b>: <a href=\"Organization-example-03.html\">Organization XYZ Hospital Co. Ltd.</a></p><p><b>sender</b>: <a href=\"Organization-example-02.html\">Organization XYZ Insurance Co. Ltd.</a></p><p><b>reasonCode</b>: <span title=\"Codes:{http://snomed.info/sct 410429000}\">Cardiac arrest</span></p><p><b>reasonReference</b>: <a href=\"Condition-example-03.html\">Condition Cardiac arrest, unspecified</a></p></div>"
+  },
+  "identifier" : [{
+    "value" : "4524657454"
+  }],
+  "basedOn" : [{
+    "reference" : "Claim/Claim-preauthorization-example-01"
+  }],
+  "status" : "active",
+  "category" : [{
+    "coding" : [{
+      "system" : "http://terminology.hl7.org/CodeSystem/communication-category",
+      "code" : "alert"
+    }]
+  }],
+  "priority" : "routine",
+  "payload" : [{
+    "contentString" : "Please provide the Angeography report to support your Claim# DEF5647."
+  }],
+  "authoredOn" : "2023-12-08T08:25:05+10:00",
+  "requester" : {
+    "reference" : "Organization/example-02"
+  },
+  "recipient" : [{
+    "reference" : "Organization/example-03"
+  }],
+  "sender" : {
+    "reference" : "Organization/example-02"
+  },
+  "reasonCode" : [{
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "410429000",
+      "display" : "Cardiac arrest"
+    }]
+  }],
+  "reasonReference" : [{
+    "reference" : "Condition/example-03"
+  }]
+}

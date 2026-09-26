@@ -1,0 +1,109 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-productorservice",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-productorservice</b></p><a name=\"ndhm-productorservice\"> </a><a name=\"hcndhm-productorservice\"> </a><a name=\"ndhm-productorservice-hi-IN\"> </a><p>This value set includes codes based on the following rules:</p><ul><li>Include codes from<a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a> where concept  is-a 387713003 (Surgical procedure (procedure))</li><li>Include codes from<a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a> where concept  is-a 305056002 (Admission procedure)</li><li>Include codes from<a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a> where concept  is-a 43741000 (Site of care)</li><li>Include codes from<a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a> where concept  is-a 285201006 (Hospital environment)</li><li>Include codes from<a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a> where concept  is-a 63653004 (Medical device)</li><li>Include codes from<a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a> where concept  is-a 440654001 (Inpatient environment (environment))</li><li>Include codes from<a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a> where concept  is-a 440655000 (Outpatient environment (environment))</li></ul><p>This value set excludes codes based on the following rules:</p><ul><li>Exclude these codes as defined in <a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a><table class=\"none\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td><a href=\"http://snomed.info/id/387713003\">387713003</a></td><td>Surgical procedure (procedure)</td></tr><tr><td><a href=\"http://snomed.info/id/63653004\">63653004</a></td><td>Biomedical device (physical object)</td></tr><tr><td><a href=\"http://snomed.info/id/305056002\">305056002</a></td><td>Admission procedure (procedure)</td></tr><tr><td><a href=\"http://snomed.info/id/43741000\">43741000</a></td><td>Site of care (environment)</td></tr></table></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-productorservice",
+  "version" : "6.5.0",
+  "name" : "ProductorService",
+  "title" : "ProductorService",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2022-07-14",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This value set includes codes for product or service from SNOMEDCT",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "copyright" : "This value set includes content from SNOMED CT, which is copyright © 2002+ International Health Terminology Standards Development Organisation (IHTSDO), and distributed by agreement between IHTSDO and HL7. Implementer use of SNOMED CT is not covered by this agreement",
+  "compose" : {
+    "include" : [{
+      "system" : "http://snomed.info/sct",
+      "filter" : [{
+        "property" : "concept",
+        "op" : "is-a",
+        "value" : "387713003"
+      }]
+    },
+    {
+      "system" : "http://snomed.info/sct",
+      "filter" : [{
+        "property" : "concept",
+        "op" : "is-a",
+        "value" : "305056002"
+      }]
+    },
+    {
+      "system" : "http://snomed.info/sct",
+      "filter" : [{
+        "property" : "concept",
+        "op" : "is-a",
+        "value" : "43741000"
+      }]
+    },
+    {
+      "system" : "http://snomed.info/sct",
+      "filter" : [{
+        "property" : "concept",
+        "op" : "is-a",
+        "value" : "285201006"
+      }]
+    },
+    {
+      "system" : "http://snomed.info/sct",
+      "filter" : [{
+        "property" : "concept",
+        "op" : "is-a",
+        "value" : "63653004"
+      }]
+    },
+    {
+      "system" : "http://snomed.info/sct",
+      "filter" : [{
+        "property" : "concept",
+        "op" : "is-a",
+        "value" : "440654001"
+      }]
+    },
+    {
+      "system" : "http://snomed.info/sct",
+      "filter" : [{
+        "property" : "concept",
+        "op" : "is-a",
+        "value" : "440655000"
+      }]
+    }],
+    "exclude" : [{
+      "system" : "http://snomed.info/sct",
+      "concept" : [{
+        "code" : "387713003",
+        "display" : "Surgical procedure (procedure)"
+      },
+      {
+        "code" : "63653004",
+        "display" : "Biomedical device (physical object)"
+      },
+      {
+        "code" : "305056002",
+        "display" : "Admission procedure (procedure)"
+      },
+      {
+        "code" : "43741000",
+        "display" : "Site of care (environment)"
+      }]
+    }]
+  }
+}

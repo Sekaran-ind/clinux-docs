@@ -1,0 +1,105 @@
+{
+  "resourceType" : "PaymentReconciliation",
+  "id" : "example-01",
+  "meta" : {
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: PaymentReconciliation example-01</b></p><a name=\"example-01\"> </a><a name=\"hcexample-01\"> </a><a name=\"example-01-hi-IN\"> </a><p><b>identifier</b>: <code>http://www.BenefitsInc.com/fhir/enrollmentresponse</code>/781234</p><p><b>status</b>: Active</p><p><b>period</b>: 2024-03-01 11:01:00+0500 --&gt; 2024-03-31 11:01:00+0500</p><p><b>created</b>: 2024-03-31</p><p><b>paymentIssuer</b>: <a href=\"Organization-example-02.html\">Organization XYZ Insurance Co. Ltd.</a></p><p><b>requestor</b>: <a href=\"Organization-example-03.html\">Organization XYZ Hospital Co. Ltd.</a></p><p><b>outcome</b>: Processing Complete</p><p><b>disposition</b>: 2024 march month settlement.</p><p><b>paymentDate</b>: 2024-03-31</p><h3>PaymentAmounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>180000</td><td>Indian rupee</td></tr></table><p><b>paymentIdentifier</b>: UTRNUMBER2920287229</p><blockquote><p><b>detail</b></p><p><b>identifier</b>: CLAIMREFNUM7612345</p><p><b>type</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type approvedAmount}\">Approved Amount</span></p><p><b>date</b>: 2024-03-31</p><h3>Amounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>90000</td><td>Indian rupee</td></tr></table></blockquote><blockquote><p><b>detail</b></p><p><b>identifier</b>: CLAIMREFNUM7612345</p><p><b>type</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type tds}\">TDS Deduction</span></p><p><b>date</b>: 2024-03-31</p><h3>Amounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>9000</td><td>Indian rupee</td></tr></table></blockquote><blockquote><p><b>detail</b></p><p><b>identifier</b>: CLAIMREFNUM6789054</p><p><b>type</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type approvedAmount}\">Approved Amount</span></p><p><b>date</b>: 2024-03-31</p><h3>Amounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>110000</td><td>Indian rupee</td></tr></table></blockquote><blockquote><p><b>detail</b></p><p><b>identifier</b>: CLAIMREFNUM6789054</p><p><b>type</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type tds}\">TDS Deduction</span></p><p><b>date</b>: 2024-03-31</p><h3>Amounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>11000</td><td>Indian rupee</td></tr></table></blockquote></div>"
+  },
+  "identifier" : [{
+    "system" : "http://www.BenefitsInc.com/fhir/enrollmentresponse",
+    "value" : "781234"
+  }],
+  "status" : "active",
+  "period" : {
+    "start" : "2024-03-01T11:01:00+05:00",
+    "end" : "2024-03-31T11:01:00+05:00"
+  },
+  "created" : "2024-03-31",
+  "paymentIssuer" : {
+    "reference" : "Organization/example-02"
+  },
+  "requestor" : {
+    "reference" : "Organization/example-03"
+  },
+  "outcome" : "complete",
+  "disposition" : "2024 march month settlement.",
+  "paymentDate" : "2024-03-31",
+  "paymentAmount" : {
+    "value" : 180000,
+    "currency" : "INR"
+  },
+  "paymentIdentifier" : {
+    "value" : "UTRNUMBER2920287229"
+  },
+  "detail" : [{
+    "identifier" : {
+      "value" : "CLAIMREFNUM7612345"
+    },
+    "type" : {
+      "coding" : [{
+        "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type",
+        "code" : "approvedAmount",
+        "display" : "Approved Amount"
+      }]
+    },
+    "date" : "2024-03-31",
+    "amount" : {
+      "value" : 90000,
+      "currency" : "INR"
+    }
+  },
+  {
+    "identifier" : {
+      "value" : "CLAIMREFNUM7612345"
+    },
+    "type" : {
+      "coding" : [{
+        "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type",
+        "code" : "tds",
+        "display" : "TDS Deduction"
+      }]
+    },
+    "date" : "2024-03-31",
+    "amount" : {
+      "value" : 9000,
+      "currency" : "INR"
+    }
+  },
+  {
+    "identifier" : {
+      "value" : "CLAIMREFNUM6789054"
+    },
+    "type" : {
+      "coding" : [{
+        "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type",
+        "code" : "approvedAmount",
+        "display" : "Approved Amount"
+      }]
+    },
+    "date" : "2024-03-31",
+    "amount" : {
+      "value" : 110000,
+      "currency" : "INR"
+    }
+  },
+  {
+    "identifier" : {
+      "value" : "CLAIMREFNUM6789054"
+    },
+    "type" : {
+      "coding" : [{
+        "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-payment-type",
+        "code" : "tds",
+        "display" : "TDS Deduction"
+      }]
+    },
+    "date" : "2024-03-31",
+    "amount" : {
+      "value" : 11000,
+      "currency" : "INR"
+    }
+  }]
+}

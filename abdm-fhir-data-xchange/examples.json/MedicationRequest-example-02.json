@@ -1,0 +1,70 @@
+{
+  "resourceType" : "MedicationRequest",
+  "id" : "example-02",
+  "meta" : {
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: MedicationRequest example-02</b></p><a name=\"example-02\"> </a><a name=\"hcexample-02\"> </a><a name=\"example-02-hi-IN\"> </a><p><b>status</b>: Active</p><p><b>intent</b>: Order</p><p><b>medication</b>: <span title=\"Codes:{http://snomed.info/sct 765507008}\">Metformin hydrochloride 500 mg prolonged-release oral tablet</span></p><p><b>subject</b>: <a href=\"Patient-example-01.html\">Adarsh Agrawal</a></p><p><b>authoredOn</b>: 2023-09-07</p><p><b>requester</b>: <a href=\"Practitioner-example-01.html\">Dr. Aayush Agrawal</a></p><p><b>reasonCode</b>: <span title=\"Codes:{http://snomed.info/sct 44054006}\">Type 2 diabetes mellitus</span></p><p><b>reasonReference</b>: <a href=\"Condition-example-02.html\">Condition Type 2 diabetes mellitus</a></p><h3>DosageInstructions</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Text</b></td><td><b>AdditionalInstruction</b></td><td><b>Timing</b></td><td><b>Route</b></td><td><b>Method</b></td></tr><tr><td style=\"display: none\">*</td><td>One tablet at once</td><td><span title=\"Codes:{http://snomed.info/sct 311504000}\">With or after food</span></td><td>Once per 1 day</td><td><span title=\"Codes:{http://snomed.info/sct 26643006}\">Oral Route</span></td><td><span title=\"Codes:{http://snomed.info/sct 421521009}\">Swallow</span></td></tr></table></div>"
+  },
+  "status" : "active",
+  "intent" : "order",
+  "medicationCodeableConcept" : {
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "765507008",
+      "display" : "Metformin hydrochloride 500 mg prolonged-release oral tablet"
+    }]
+  },
+  "subject" : {
+    "reference" : "Patient/example-01",
+    "display" : "Adarsh Agrawal"
+  },
+  "authoredOn" : "2023-09-07",
+  "requester" : {
+    "reference" : "Practitioner/example-01",
+    "display" : "Dr. Aayush Agrawal"
+  },
+  "reasonCode" : [{
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "44054006",
+      "display" : "Type 2 diabetes mellitus"
+    }]
+  }],
+  "reasonReference" : [{
+    "reference" : "Condition/example-02"
+  }],
+  "dosageInstruction" : [{
+    "text" : "One tablet at once",
+    "additionalInstruction" : [{
+      "coding" : [{
+        "system" : "http://snomed.info/sct",
+        "code" : "311504000",
+        "display" : "With or after food"
+      }]
+    }],
+    "timing" : {
+      "repeat" : {
+        "frequency" : 1,
+        "period" : 1,
+        "periodUnit" : "d"
+      }
+    },
+    "route" : {
+      "coding" : [{
+        "system" : "http://snomed.info/sct",
+        "code" : "26643006",
+        "display" : "Oral Route"
+      }]
+    },
+    "method" : {
+      "coding" : [{
+        "system" : "http://snomed.info/sct",
+        "code" : "421521009",
+        "display" : "Swallow"
+      }]
+    }
+  }]
+}

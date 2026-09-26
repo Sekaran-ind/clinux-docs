@@ -1,0 +1,117 @@
+{
+  "resourceType" : "Invoice",
+  "id" : "Consultation-example-01",
+  "meta" : {
+    "versionId" : "1",
+    "lastUpdated" : "2023-08-23T17:02:00.181+05:30",
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/Invoice"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: Invoice Consultation-example-01</b></p><a name=\"Consultation-example-01\"> </a><a name=\"hcConsultation-example-01\"> </a><a name=\"Consultation-example-01-hi-IN\"> </a><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">version: 1; Last updated: 2023-08-23 17:02:00+0530</p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-Invoice.html\">Invoice</a></p></div><p><b>identifier</b>: CA/5842</p><p><b>status</b>: issued</p><p><b>type</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-billing-codes 00}\">Consultation</span></p><p><b>subject</b>: <a href=\"Patient-example-01.html\">ABC Male, DoB: 1981-01-12 ( Medical record number: 22-7225-4829-5255)</a></p><p><b>date</b>: 2023-06-01 10:00:00+0530</p><h3>Participants</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Actor</b></td></tr><tr><td style=\"display: none\">*</td><td><a href=\"Practitioner-example-01.html\">Practitioner Dr. DEF</a></td></tr></table><blockquote><p><b>lineItem</b></p><p><b>sequence</b>: 1</p><p><b>chargeItem</b>: <a href=\"ChargeItem-Consultation-example-01.html\">ChargeItem Consultation</a></p><blockquote><p><b>priceComponent</b></p><p><b>type</b>: base price</p><p><b>code</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components 01}\">Rate</span></p><h3>Amounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>550</td><td>Indian rupee</td></tr></table></blockquote><blockquote><p><b>priceComponent</b></p><p><b>type</b>: informational</p><p><b>code</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components 00}\">MRP</span></p><h3>Amounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>600</td><td>Indian rupee</td></tr></table></blockquote><blockquote><p><b>priceComponent</b></p><p><b>type</b>: discount</p><p><b>code</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components 02}\">Discount</span></p><h3>Amounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>50</td><td>Indian rupee</td></tr></table></blockquote><blockquote><p><b>priceComponent</b></p><p><b>type</b>: tax</p><p><b>code</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components 03}\">CGST</span></p><h3>Amounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>30</td><td>Indian rupee</td></tr></table></blockquote><blockquote><p><b>priceComponent</b></p><p><b>type</b>: tax</p><p><b>code</b>: <span title=\"Codes:{https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components 04}\">SGST</span></p><h3>Amounts</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>30</td><td>Indian rupee</td></tr></table></blockquote></blockquote><h3>TotalNets</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>610</td><td>Indian rupee</td></tr></table><h3>TotalGrosses</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>500</td><td>Indian rupee</td></tr></table></div>"
+  },
+  "identifier" : [{
+    "value" : "CA/5842"
+  }],
+  "status" : "issued",
+  "type" : {
+    "coding" : [{
+      "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-billing-codes",
+      "code" : "00",
+      "display" : "Consultation"
+    }]
+  },
+  "subject" : {
+    "reference" : "Patient/example-01"
+  },
+  "date" : "2023-06-01T10:00:00.181+05:30",
+  "participant" : [{
+    "actor" : {
+      "reference" : "Practitioner/example-01"
+    }
+  }],
+  "lineItem" : [{
+    "sequence" : 1,
+    "chargeItemReference" : {
+      "reference" : "ChargeItem/Consultation-example-01"
+    },
+    "priceComponent" : [{
+      "type" : "base",
+      "code" : {
+        "coding" : [{
+          "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components",
+          "code" : "01",
+          "display" : "Rate"
+        }]
+      },
+      "amount" : {
+        "value" : 550,
+        "currency" : "INR"
+      }
+    },
+    {
+      "type" : "informational",
+      "code" : {
+        "coding" : [{
+          "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components",
+          "code" : "00",
+          "display" : "MRP"
+        }]
+      },
+      "amount" : {
+        "value" : 600,
+        "currency" : "INR"
+      }
+    },
+    {
+      "type" : "discount",
+      "code" : {
+        "coding" : [{
+          "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components",
+          "code" : "02",
+          "display" : "Discount"
+        }]
+      },
+      "amount" : {
+        "value" : 50,
+        "currency" : "INR"
+      }
+    },
+    {
+      "type" : "tax",
+      "code" : {
+        "coding" : [{
+          "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components",
+          "code" : "03",
+          "display" : "CGST"
+        }]
+      },
+      "amount" : {
+        "value" : 30,
+        "currency" : "INR"
+      }
+    },
+    {
+      "type" : "tax",
+      "code" : {
+        "coding" : [{
+          "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-price-components",
+          "code" : "04",
+          "display" : "SGST"
+        }]
+      },
+      "amount" : {
+        "value" : 30,
+        "currency" : "INR"
+      }
+    }]
+  }],
+  "totalNet" : {
+    "value" : 610,
+    "currency" : "INR"
+  },
+  "totalGross" : {
+    "value" : 500,
+    "currency" : "INR"
+  }
+}

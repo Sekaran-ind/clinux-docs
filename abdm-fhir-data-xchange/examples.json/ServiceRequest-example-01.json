@@ -1,0 +1,28 @@
+{
+  "resourceType" : "ServiceRequest",
+  "id" : "example-01",
+  "meta" : {
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/ServiceRequest"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ServiceRequest example-01</b></p><a name=\"example-01\"> </a><a name=\"hcexample-01\"> </a><a name=\"example-01-hi-IN\"> </a><p><b>status</b>: Active</p><p><b>intent</b>: Original Order</p><p><b>code</b>: <span title=\"Codes:{http://snomed.info/sct 16254007}\">Lipid Panel</span></p><p><b>subject</b>: <a href=\"Patient-example-01.html\">ABC Male, DoB: 1981-01-12 ( Medical record number: 22-7225-4829-5255)</a></p><p><b>occurrence</b>: 2020-07-08 09:33:27+0700</p><p><b>requester</b>: <a href=\"Practitioner-example-01.html\">Dr. PQR</a></p></div>"
+  },
+  "status" : "active",
+  "intent" : "original-order",
+  "code" : {
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "16254007",
+      "display" : "Lipid Panel"
+    }]
+  },
+  "subject" : {
+    "reference" : "Patient/example-01"
+  },
+  "occurrenceDateTime" : "2020-07-08T09:33:27+07:00",
+  "requester" : {
+    "reference" : "Practitioner/example-01",
+    "display" : "Dr. PQR"
+  }
+}

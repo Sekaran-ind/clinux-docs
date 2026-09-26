@@ -1,0 +1,89 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "ndhm-task-input-type-code",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem ndhm-task-input-type-code</b></p><a name=\"ndhm-task-input-type-code\"> </a><a name=\"hcndhm-task-input-type-code\"> </a><a name=\"ndhm-task-input-type-code-hi-IN\"> </a><p>This case-sensitive code system <code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td><td><b>Definition</b></td></tr><tr><td style=\"white-space:nowrap\">productNumber<a name=\"ndhm-task-input-type-code-productNumber\"> </a></td><td>ProductNumber</td><td>A unique identifier for a product or service that is provided or requested in a claim.</td></tr><tr><td style=\"white-space:nowrap\">claimNumber<a name=\"ndhm-task-input-type-code-claimNumber\"> </a></td><td>ClaimNumber</td><td>A unique identifier for a claim that is submitted or received for reimbursement or payment.</td></tr><tr><td style=\"white-space:nowrap\">initimationNumber<a name=\"ndhm-task-input-type-code-initimationNumber\"> </a></td><td>InitimationNumber</td><td>A unique identifier for a request for preauthorization or predetermination of a claim.</td></tr><tr><td style=\"white-space:nowrap\">fromDate<a name=\"ndhm-task-input-type-code-fromDate\"> </a></td><td>FromDate</td><td>The start date of a period or range of dates that is relevant for a claim, payment, or authorization.</td></tr><tr><td style=\"white-space:nowrap\">toDate<a name=\"ndhm-task-input-type-code-toDate\"> </a></td><td>ToDate</td><td>The end date of a period or range of dates that is relevant for a claim, payment, or authorization</td></tr><tr><td style=\"white-space:nowrap\">financeYear<a name=\"ndhm-task-input-type-code-financeYear\"> </a></td><td>FinanceYear</td><td>The fiscal year that is used for accounting or reporting purposes for a claim, payment, or authorization.</td></tr><tr><td style=\"white-space:nowrap\">serviceCode<a name=\"ndhm-task-input-type-code-serviceCode\"> </a></td><td>ServiceCode</td><td>A code that identifies the type or category of a service or product that is provided or requested in a claim, payment, or authorization.</td></tr><tr><td style=\"white-space:nowrap\">policyNumber<a name=\"ndhm-task-input-type-code-policyNumber\"> </a></td><td>PolicyNumber</td><td>A unique identifier for a policy or contract that covers a patient or a service or product in a claim, payment, or authorization.</td></tr><tr><td style=\"white-space:nowrap\">providerId<a name=\"ndhm-task-input-type-code-providerId\"> </a></td><td>ProviderId</td><td>A unique identifier for a health care provider that is involved in providing or requesting a service or product in a claim, payment, or authorization.</td></tr><tr><td style=\"white-space:nowrap\">payerId<a name=\"ndhm-task-input-type-code-payerId\"> </a></td><td>PayerId</td><td>A unique identifier for a health care payer that is responsible for paying or reimbursing a claim, payment, or authorization.</td></tr><tr><td style=\"white-space:nowrap\">document<a name=\"ndhm-task-input-type-code-document\"> </a></td><td>Document</td><td>A distinctive identifier for indicating the provision of a document as input for a task resource.</td></tr></table></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+  "version" : "6.5.0",
+  "name" : "TaskInputType",
+  "title" : "Task Input Type",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-11-28",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This CodeSystem contains a set of codes that can be utilized to describe the type of input in the task resource",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "caseSensitive" : true,
+  "content" : "complete",
+  "count" : 11,
+  "concept" : [{
+    "code" : "productNumber",
+    "display" : "ProductNumber",
+    "definition" : "A unique identifier for a product or service that is provided or requested in a claim."
+  },
+  {
+    "code" : "claimNumber",
+    "display" : "ClaimNumber",
+    "definition" : "A unique identifier for a claim that is submitted or received for reimbursement or payment."
+  },
+  {
+    "code" : "initimationNumber",
+    "display" : "InitimationNumber",
+    "definition" : "A unique identifier for a request for preauthorization or predetermination of a claim."
+  },
+  {
+    "code" : "fromDate",
+    "display" : "FromDate",
+    "definition" : "The start date of a period or range of dates that is relevant for a claim, payment, or authorization."
+  },
+  {
+    "code" : "toDate",
+    "display" : "ToDate",
+    "definition" : "The end date of a period or range of dates that is relevant for a claim, payment, or authorization"
+  },
+  {
+    "code" : "financeYear",
+    "display" : "FinanceYear",
+    "definition" : "The fiscal year that is used for accounting or reporting purposes for a claim, payment, or authorization."
+  },
+  {
+    "code" : "serviceCode",
+    "display" : "ServiceCode",
+    "definition" : "A code that identifies the type or category of a service or product that is provided or requested in a claim, payment, or authorization."
+  },
+  {
+    "code" : "policyNumber",
+    "display" : "PolicyNumber",
+    "definition" : "A unique identifier for a policy or contract that covers a patient or a service or product in a claim, payment, or authorization."
+  },
+  {
+    "code" : "providerId",
+    "display" : "ProviderId",
+    "definition" : "A unique identifier for a health care provider that is involved in providing or requesting a service or product in a claim, payment, or authorization."
+  },
+  {
+    "code" : "payerId",
+    "display" : "PayerId",
+    "definition" : "A unique identifier for a health care payer that is responsible for paying or reimbursing a claim, payment, or authorization."
+  },
+  {
+    "code" : "document",
+    "display" : "Document",
+    "definition" : "A distinctive identifier for indicating the provision of a document as input for a task resource."
+  }]
+}

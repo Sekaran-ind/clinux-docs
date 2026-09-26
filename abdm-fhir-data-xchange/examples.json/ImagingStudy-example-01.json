@@ -1,0 +1,49 @@
+{
+  "resourceType" : "ImagingStudy",
+  "id" : "example-01",
+  "meta" : {
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/ImagingStudy"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ImagingStudy example-01</b></p><a name=\"example-01\"> </a><a name=\"hcexample-01\"> </a><a name=\"example-01-hi-IN\"> </a><p><b>identifier</b>: <code>https://xyz.in/DCMServer</code>/7897</p><p><b>status</b>: Available</p><p><b>subject</b>: <a href=\"Patient-example-01.html\">ABC Male, DoB: 1981-01-12 ( Medical record number: 22-7225-4829-5255)</a></p><p><b>interpreter</b>: <a href=\"Practitioner-example-01.html\">Practitioner Dr. DEF</a></p><p><b>numberOfSeries</b>: 1</p><p><b>numberOfInstances</b>: 1</p><blockquote><p><b>series</b></p><p><b>uid</b>: 2.16.124.113543.6003.2588828330.45298.17418.2723805630</p><p><b>number</b>: 1</p><p><b>modality</b>: <a href=\"http://snomed.info/id/429858000\">SNOMED CT 429858000</a>: CT of head and neck</p><p><b>description</b>: CT Surview 180</p><p><b>numberOfInstances</b>: 1</p><p><b>bodySite</b>: <a href=\"http://snomed.info/id/774007\">SNOMED CT 774007</a>: Structure of head and/or neck</p><h3>Instances</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Uid</b></td><td><b>SopClass</b></td><td><b>Number</b></td><td><b>Title</b></td></tr><tr><td style=\"display: none\">*</td><td>2.16.124.113543.6003.189642796.63084.16748.2599092903</td><td>unknown urn:oid:1.2.840.10008.5.1.4.1.1.2: urn:oid:1.2.840.10008.5.1.4.1.1.2</td><td>1</td><td>CT of head and neck</td></tr></table></blockquote></div>"
+  },
+  "identifier" : [{
+    "system" : "https://xyz.in/DCMServer",
+    "value" : "7897"
+  }],
+  "status" : "available",
+  "subject" : {
+    "reference" : "Patient/example-01"
+  },
+  "interpreter" : [{
+    "reference" : "Practitioner/example-01"
+  }],
+  "numberOfSeries" : 1,
+  "numberOfInstances" : 1,
+  "series" : [{
+    "uid" : "2.16.124.113543.6003.2588828330.45298.17418.2723805630",
+    "number" : 1,
+    "modality" : {
+      "system" : "http://snomed.info/sct",
+      "code" : "429858000",
+      "display" : "CT of head and neck"
+    },
+    "description" : "CT Surview 180",
+    "numberOfInstances" : 1,
+    "bodySite" : {
+      "system" : "http://snomed.info/sct",
+      "code" : "774007",
+      "display" : "Structure of head and/or neck"
+    },
+    "instance" : [{
+      "uid" : "2.16.124.113543.6003.189642796.63084.16748.2599092903",
+      "sopClass" : {
+        "system" : "urn:ietf:rfc:3986",
+        "code" : "urn:oid:1.2.840.10008.5.1.4.1.1.2"
+      },
+      "number" : 1,
+      "title" : "CT of head and neck"
+    }]
+  }]
+}

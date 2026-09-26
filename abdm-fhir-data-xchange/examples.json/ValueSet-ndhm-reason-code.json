@@ -1,0 +1,36 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-reason-code",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-reason-code</b></p><a name=\"ndhm-reason-code\"> </a><a name=\"hcndhm-reason-code\"> </a><a name=\"ndhm-reason-code-hi-IN\"> </a><ul><li>Include all codes defined in <a href=\"CodeSystem-ndhm-reason-code.html\"><code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code</code></a></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-reason-code",
+  "version" : "6.5.0",
+  "name" : "ReasonCode",
+  "title" : "Reason Code",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-11-28",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This ValueSet contains a set of codes to captures reasons associated with task processing.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "compose" : {
+    "include" : [{
+      "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code"
+    }]
+  }
+}

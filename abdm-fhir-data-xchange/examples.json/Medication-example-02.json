@@ -1,0 +1,41 @@
+{
+  "resourceType" : "Medication",
+  "id" : "example-02",
+  "meta" : {
+    "versionId" : "1",
+    "lastUpdated" : "2023-08-21T14:49:00.181+05:30",
+    "profile" : ["https://nrces.in/ndhm/fhir/r4/StructureDefinition/Medication"]
+  },
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: Medication example-02</b></p><a name=\"example-02\"> </a><a name=\"hcexample-02\"> </a><a name=\"example-02-hi-IN\"> </a><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">version: 1; Last updated: 2023-08-21 14:49:00+0530</p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-Medication.html\">Medication</a></p></div><p><b>identifier</b>: Harmonized System of Nomenclature/3004</p><p><b>code</b>: <span title=\"Codes:{http://snomed.info/sct 324409009}\">Sulfalene 2 g oral tablet</span></p><p><b>form</b>: <span title=\"Codes:{http://snomed.info/sct 385055001}\">Tablet</span></p><h3>Batches</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>LotNumber</b></td><td><b>ExpirationDate</b></td></tr><tr><td style=\"display: none\">*</td><td>22180424</td><td>2023-03-24</td></tr></table></div>"
+  },
+  "identifier" : [{
+    "type" : {
+      "coding" : [{
+        "system" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+        "code" : "HSN",
+        "display" : "Harmonized System of Nomenclature"
+      }]
+    },
+    "value" : "3004"
+  }],
+  "code" : {
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "324409009",
+      "display" : "Sulfalene 2 g oral tablet"
+    }]
+  },
+  "form" : {
+    "coding" : [{
+      "system" : "http://snomed.info/sct",
+      "code" : "385055001",
+      "display" : "Tablet"
+    }]
+  },
+  "batch" : {
+    "lotNumber" : "22180424",
+    "expirationDate" : "2023-03-24"
+  }
+}

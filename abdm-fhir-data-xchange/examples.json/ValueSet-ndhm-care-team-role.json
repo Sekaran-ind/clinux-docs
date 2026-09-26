@@ -1,0 +1,52 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-care-team-role",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-care-team-role</b></p><a name=\"ndhm-care-team-role\"> </a><a name=\"hcndhm-care-team-role\"> </a><a name=\"ndhm-care-team-role-hi-IN\"> </a><ul><li>Include these codes as defined in <a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a><table class=\"none\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td><a href=\"http://snomed.info/id/405623001\">405623001</a></td><td>Assigned practitioner (occupation)</td></tr><tr><td><a href=\"http://snomed.info/id/768839008\">768839008</a></td><td>Consultant (occupation)</td></tr><tr><td><a href=\"http://snomed.info/id/88189002\">88189002</a></td><td>Anesthesiologist (occupation)</td></tr><tr><td><a href=\"http://snomed.info/id/223366009\">223366009</a></td><td>Healthcare professional (occupation)</td></tr></table></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-care-team-role",
+  "version" : "6.5.0",
+  "name" : "CareTeamRole",
+  "title" : "Care Team Role",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-07-20",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This valueset comprises codes that represent various roles within a care team.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "compose" : {
+    "include" : [{
+      "system" : "http://snomed.info/sct",
+      "concept" : [{
+        "code" : "405623001",
+        "display" : "Assigned practitioner (occupation)"
+      },
+      {
+        "code" : "768839008",
+        "display" : "Consultant (occupation)"
+      },
+      {
+        "code" : "88189002",
+        "display" : "Anesthesiologist (occupation)"
+      },
+      {
+        "code" : "223366009",
+        "display" : "Healthcare professional (occupation)"
+      }]
+    }]
+  }
+}

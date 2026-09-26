@@ -1,0 +1,50 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "ndhm-benefit-type",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem ndhm-benefit-type</b></p><a name=\"ndhm-benefit-type\"> </a><a name=\"hcndhm-benefit-type\"> </a><a name=\"ndhm-benefit-type-hi-IN\"> </a><p>This case-sensitive code system <code>https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-benefit-type</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td style=\"white-space:nowrap\">00<a name=\"ndhm-benefit-type-00\"> </a></td><td>ICU</td></tr><tr><td style=\"white-space:nowrap\">01<a name=\"ndhm-benefit-type-01\"> </a></td><td>Blood</td></tr><tr><td style=\"white-space:nowrap\">02<a name=\"ndhm-benefit-type-02\"> </a></td><td>Oxygen</td></tr><tr><td style=\"white-space:nowrap\">03<a name=\"ndhm-benefit-type-03\"> </a></td><td>Room Rent</td></tr></table></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-benefit-type",
+  "version" : "6.5.0",
+  "name" : "BenefitType",
+  "title" : "Benefit Type",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-07-05",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This CodeSystem includes a collection of codes that can be used to categorize the type of benefits provided by an insurance.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "caseSensitive" : true,
+  "content" : "complete",
+  "count" : 4,
+  "concept" : [{
+    "code" : "00",
+    "display" : "ICU"
+  },
+  {
+    "code" : "01",
+    "display" : "Blood"
+  },
+  {
+    "code" : "02",
+    "display" : "Oxygen"
+  },
+  {
+    "code" : "03",
+    "display" : "Room Rent"
+  }]
+}

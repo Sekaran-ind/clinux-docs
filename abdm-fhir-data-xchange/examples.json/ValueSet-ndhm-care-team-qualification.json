@@ -1,0 +1,44 @@
+{
+  "resourceType" : "ValueSet",
+  "id" : "ndhm-care-team-qualification",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: ValueSet ndhm-care-team-qualification</b></p><a name=\"ndhm-care-team-qualification\"> </a><a name=\"hcndhm-care-team-qualification\"> </a><a name=\"ndhm-care-team-qualification-hi-IN\"> </a><ul><li>Include these codes as defined in <a href=\"http://www.snomed.org/\"><code>http://snomed.info/sct</code></a><table class=\"none\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td><a href=\"http://snomed.info/id/394658006\">394658006</a></td><td>Clinical specialty (qualifier value)</td></tr><tr><td><a href=\"http://snomed.info/id/365460000\">365460000</a></td><td>Finding of education received in the past (finding)</td></tr></table></li></ul></div>"
+  },
+  "url" : "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-care-team-qualification",
+  "version" : "6.5.0",
+  "name" : "CareTeamQualification",
+  "title" : "Care Team Qualification",
+  "status" : "draft",
+  "experimental" : false,
+  "date" : "2023-07-20",
+  "publisher" : "National Resource Center for EHR Standards",
+  "contact" : [{
+    "name" : "National Resource Center for EHR Standards",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "https://nrces.in/"
+    }]
+  }],
+  "description" : "This valueset comprises codes that represent credentials or specializations of healthcare practitioners.",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IN",
+      "display" : "India"
+    }]
+  }],
+  "compose" : {
+    "include" : [{
+      "system" : "http://snomed.info/sct",
+      "concept" : [{
+        "code" : "394658006",
+        "display" : "Clinical specialty (qualifier value)"
+      },
+      {
+        "code" : "365460000",
+        "display" : "Finding of education received in the past (finding)"
+      }]
+    }]
+  }
+}
