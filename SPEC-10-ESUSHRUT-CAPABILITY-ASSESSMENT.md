@@ -1,4 +1,10 @@
-# Specification 10: Capability Assessment — e-Sushrut@Clinic vs. ClinuxFlow
+# SPEC-10: Capability Assessment: e-Sushrut@Clinic vs. ClinuxFlow
+
+| | |
+|---|---|
+| **Status** | Reference. No roadmap decisions are made here. |
+| **Last reviewed** | 2026-09-26. The ClinuxFlow column was re-checked against the code; the e-Sushrut column is unchanged from the original research (public sources, not hands-on). |
+| **Related** | SPEC-11 (ABDM milestones, where M4 is chosen partly because of this analysis) |
 
 ## 1. Objective
 
@@ -45,7 +51,7 @@ Sourced from the live UAT site plus C-DAC/NHA's own public materials (the UAT lo
 
 ## 3. Capability matrix
 
-Legend: ✅ built & live-verified this session or earlier · 🟡 partial/adjacent capability exists · ❌ not built.
+Legend: ✅ built and live-verified · 🟡 partial/adjacent capability exists · ❌ not built.
 
 | Capability | e-Sushrut@Clinic | ClinuxFlow (current) | Assessment |
 |---|---|---|---|
@@ -61,18 +67,18 @@ Legend: ✅ built & live-verified this session or earlier · 🟡 partial/adjace
 | Radiology / medical imaging viewing | 🟡 (integration, not confirmed as an in-app viewer) | ✅ (`CornerstoneViewer.vue`, DICOM-capable) | **ClinuxFlow ahead** — an actual in-app DICOM viewer is a materially more advanced capability than a referral-style lab/radiology "integration" |
 | Telemedicine / video consultation | ✅ | ✅ (RealtimeKit-based `VideoCallPanel.vue`) | Parity |
 | CDSS (clinical decision support) | ✅ (AIIMS CDSS for hypertension/diabetes, free) | 🟡 (Cübo's NLP/keyword slot-filling exists; no clinical-guideline safety-check layer yet — SPEC-07 Part C's MedGemma/MedSAM tier is planned, not built) | **Gap today, roadmap exists** — e-Sushrut's CDSS is live and free; ClinuxFlow's equivalent (SPEC-06/07) is specified but unbuilt |
-| Speech-to-text for documentation | ✅ | 🟡 (`test-scribe` Workers AI endpoint exists per earlier session work; not confirmed wired into the live consultation flow this session) | Needs verification, likely a small gap |
-| ABHA creation/search | ✅ | 🟡 (`clinuxflow-abdm-gateway`'s `abha.js` route exists; full UI-driven citizen ABHA creation/search flow not confirmed live-verified) | Partial — backend plumbing exists, UI completeness unconfirmed |
-| HFR/HPR registration | ✅ | ✅ (SPEC-09's canonical schema + dedicated Staff registration flow, live-verified this session) | Parity, arguably ahead on UX (plain-language fields + inline validation vs. a generic government form) |
+| Speech-to-text for documentation | ✅ | 🟡 (`test-scribe` is wired into Consultation Desk for text-to-SOAP drafting on the paid tier; there is no speech capture) | Gap: no audio input |
+| ABHA creation/search | ✅ | 🟡 (gateway routes plus `PatientAbhaPanel` at Front Desk and PatientHome; blocked end to end because the ABHA sandbox certificate endpoint returns 404) | Partial: built, but not usable until the certificate endpoint is resolved |
+| HFR/HPR registration | ✅ | ✅ (`FacilityHfrPanel` seven-stage ledger, `ProviderHprPanel` including professional update, documents and email verification; live-verified against the ABDM sandbox) | Parity, arguably ahead on UX (stages gated on real API prerequisites, attestation step, plain-language fields) |
 | ABDM Scan-and-Share / consent-based record exchange | ✅ | 🟡 (ClinuxFlow's own P2P chat-based transfer + DigiLocker PDF/QR export cover an adjacent need, but not the actual ABDM Health Information Exchange consent flow) | **Gap** — real HIE participation (acting as a full HIP within ABDM's consent-manager flow) is not built; SPEC-09 §5 explicitly defers this to Enterprise tier |
-| DigiLocker integration | Not explicitly documented | ✅ (PDF+QR export, citizen self-stores via DigiLocker's own Scan/Upload — built and live-verified this session) | **ClinuxFlow ahead**, if e-Sushrut@Clinic indeed lacks this |
-| MIS / audit reporting dashboards | ✅ (explicitly framed for public-health reporting) | ❌ | **Gap** — no analytics/reporting dashboard exists in ClinuxFlow at all yet |
+| DigiLocker integration | Not explicitly documented | ✅ (PDF+QR export, citizen self-stores via DigiLocker's own Scan/Upload — built and live-verified) | **ClinuxFlow ahead**, if e-Sushrut@Clinic indeed lacks this |
+| MIS / audit reporting dashboards | ✅ (explicitly framed for public-health reporting) | ❌ (`Dashboard.vue` shows a facility's extracted FHIR resources, not operational metrics) | **Gap**: no MIS reporting |
 | SMS/email notifications | ✅ | ❌ | **Gap** |
 | Multi-user / role-based staff accounts | ✅ | ✅ (multi-account-per-clinic, Staff registry, worklist assignment/locking) | Parity |
 | Real-time chat (staff-to-staff) | Not documented | ✅ (P2P WebRTC chat, live-verified) | **ClinuxFlow ahead** |
 | Offline operation | ✅ (claimed, mechanism undocumented) | ✅ (genuinely offline-first: local TanStack DB + Tauri LAN shared-server mode, not just "works when the network briefly drops") | Likely **ClinuxFlow ahead** on depth, though e-Sushrut's actual mechanism is unverified so this is not a confirmed comparison |
 | Accessibility (text-to-speech, dyslexia mode, contrast) | ✅ | ❌ | **Gap** |
-| Authentication (OTP, CAPTCHA, HPR-ID login) | ✅ | 🟡 (email/password auth exists; OTP/CAPTCHA/HPR-ID-as-login not built) | **Gap** |
+| Authentication (OTP, CAPTCHA, HPR-ID login) | ✅ | 🟡 (email/password, security-question recovery, join tokens; no OTP, CAPTCHA or HPR-ID login) | **Gap** |
 | FHIR compliance | Not primary claim (HL7/MDDS instead) | ✅ (explicitly FHIR R4-native architecture, reference-only data model per SPEC-05 §4) | **ClinuxFlow ahead** on standards modernity — FHIR R4 is the current international standard; HL7v2/MDDS is the older, India-specific baseline e-Sushrut targets |
 | Multi-tier pricing / deployment model (local/cloud/on-prem AI) | N/A (single free government product) | ✅ (SPEC-05's 3-tier model; SPEC-07 Part C's nano-DC/on-prem AI tier) | **ClinuxFlow-specific differentiator** — not a like-for-like comparison, since e-Sushrut has no such tiering, but relevant to ClinuxFlow's business model |
 | 24/7 dedicated support | ✅ (government-staffed) | ❌ | **Gap** — a resourcing/business decision, not a technical one |
@@ -92,8 +98,8 @@ Legend: ✅ built & live-verified this session or earlier · 🟡 partial/adjace
 8. Accessibility features — increasingly a checkbox item in government/institutional procurement even for private vendors.
 
 **Lower urgency / needs verification, not confirmed gaps**:
-9. Speech-to-text in the live consultation flow (backend endpoint reportedly exists; not confirmed wired up and verified this session).
-10. Full ABHA creation/search UI completeness (gateway routes exist; UI-driven end-to-end flow not independently re-verified this session).
+9. Speech input for documentation (text-to-SOAP exists; audio capture does not).
+10. ABHA creation and search end to end (built, blocked by the sandbox certificate 404).
 11. Real ABDM Health Information Exchange participation (already an explicitly deferred Enterprise-tier item per SPEC-09 §5 — not a surprise gap, just worth naming here for completeness).
 
 ## 5. Where ClinuxFlow already leads
@@ -104,7 +110,7 @@ Legend: ✅ built & live-verified this session or earlier · 🟡 partial/adjace
 - **Genuinely offline-first architecture** (local-first TanStack DB collections + a real LAN shared-server mode for connectivity-poor sites) vs. e-Sushrut's undocumented "supports offline" claim.
 - **FHIR R4-native data model** vs. e-Sushrut's HL7/MDDS baseline — FHIR is the modernization direction India's own ABDM ecosystem is moving toward; being FHIR-native from the start is a forward-looking advantage, not just a technical curiosity.
 - **Tiered pricing with an on-prem/nano-DC AI option** (SPEC-07 Part C) — no equivalent exists for a free government product, but this is ClinuxFlow's own differentiation lever for larger/security-conscious private accounts, not a response to something e-Sushrut offers.
-- **UX quality on the ABDM registration flow itself** — SPEC-09's plain-language, inline-validated Staff/Hospital registration (built and live-verified this session) is a genuinely more polished experience than a typical government-portal registration form, though this is a subjective/qualitative claim, not something independently benchmarked against the live e-Sushrut UI (which wasn't accessible without credentials).
+- **UX quality on ABDM registration**: stage-gated HFR/HPR journeys with an explicit attestation step. This is a qualitative claim; the live e-Sushrut UI was not accessible for comparison.
 
 ## 6. Codebase and licensing
 
@@ -121,6 +127,6 @@ Net for competitive positioning: e-Sushrut is not a code base ClinuxFlow could i
 - Could not access any authenticated e-Sushrut@Clinic screens (OPD/IPD/pharmacy workflows themselves) — this whole assessment is built from public marketing/launch coverage plus the pre-auth landing page, not a hands-on comparison of the actual working software. Treat module-level claims as "documented," not "independently verified."
 - No visibility into e-Sushrut@Clinic's actual FHIR/HL7 interoperability depth, its real barcode hardware requirements, or how its "offline" mode actually behaves — all listed as capabilities here on the strength of public claims only.
 
-## 8. Next step
+## 8. What happened next
 
-Awaiting direction — no roadmap or build decisions made in this spec.
+SPEC-11 used this matrix to pick M4 (NHCX insurance claims) as the next real ABDM investment. The adoption-blocking gaps in §4 (IPD, lab orders, MIS, notifications) remain open and unprioritized; see `PENDING-WORK.md`.

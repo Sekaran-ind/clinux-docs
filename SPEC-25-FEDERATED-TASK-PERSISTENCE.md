@@ -1,207 +1,110 @@
-# Specification 25: Federated Task Persistence
+# SPEC-25: Federated Task Persistence
 
-## 1. Objective
+| | |
+|---|---|
+| **Status** | Built (local IndexedDB persistence, D1 mirror, append-only audit, single-writer locks, the `ClinuxFlowTask` profile). **Security gap**: the D1 reads and upserts are not clinic-scoped (§6.1). Per-action FHIR `Task` records are not produced (§5). |
+| **Last reviewed** | 2026-09-26 |
+| **Code** | `clinux-frontend/src/data/collections/{taskActorSnapshots,taskAuditLog}.js`, `src/data/runtime/taskSync.js`, `src/workflow/workflowRuntime.js`, `src/stores/entryWorkflow.js`; `clinuxflow-api/migrations/0010_add_task_persistence.sql`, `src/lib/runtime/task-db.js`, `src/routes/runtime.js` (`/api/tasks/*`), `data/structure-definitions/ClinuxFlowTask.json` |
+| **Related** | SPEC-13 §2, SPEC-19 §4 and §9, SPEC-22 §2, SPEC-24 §3 |
 
-SPEC-22's own "sole large remaining item from the original four foundational decisions" — real,
-durable persistence for the Task/PlanDefinition runtime, so a journey survives a reload, a device
-switch, and a handoff between roles, not just a single tab's lifetime. The user's own framing named
-the real constraints this has to be designed against together, not sequentially: the journey is
-**federated across roles** (staff, affiliates, patient-mediated), **access tiers** (free/local vs.
-paid/cloud — SPEC-05), and **devices** (this app is local-first by default, with Cloudflare D1
-already durable for Facility's and Provider's own entities).
+## 1. Purpose
 
-This spec is design-only, per explicit instruction — no code in this pass.
+Durable persistence for the workflow runtime, so a journey survives a reload, a device switch and
+a handoff between roles, across tiers (free/local versus paid/cloud) and across devices.
 
-## 2. A real terminology clash, resolved up front
+## 2. Two meanings of "Task", kept apart
 
-"Task" means two different things across this codebase's own history, and the request as phrased
-("Task persistence for graph definition") sits right on top of the clash:
+- The **control layer** (SPEC-24's GraphDefinition and `next-best-action.js`) is stateless on
+  purpose: "done" means "passes validation", recomputed on every call. Registration is not
+  workflow-tracked (SPEC-23).
+- The **runtime layer** (`workflowRuntime.js` + `planDefinitionRunner.js`) is the real XState
+  engine. Persistence belongs here.
 
-- **SPEC-24's `GraphDefinition`/`next-best-action.js`** (control layer — Facility/Provider/
-  Affiliate×2/Patient) is deliberately, repeatedly-reaffirmed **stateless**: "done" is "passes
-  validation," recomputed fresh on every call, no persisted actor, no PlanDefinition. SPEC-23's own
-  correction was explicit and hard-won: *"state machine only for clinical journeys"* — onboarding
-  registration is not workflow-tracked, on purpose.
-- **SPEC-13 §2's runtime** (`clinux-frontend/src/workflow/workflowRuntime.js` +
-  `planDefinitionRunner.js`) is a REAL, already-built, already-live XState-driven Task/PlanDefinition
-  engine — register/login/change-password (SPEC-20's entry flow) is its first real case. It already
-  has an injectable persistence hook (`data/collections/taskActorSnapshots.js`, confirmed **local-
-  only** — a plain TanStack DB localStorage collection, no durable mirror at all today) and an
-  audit log (`auditLog`, confirmed **in-memory only** — not persisted anywhere, lost on reload).
+They connect one way: a runtime Task may cite the next-best-action suggestion that caused it
+(`reasonReference` → `{linkId, sourceResourceId}`), without the control layer tracking anything.
 
-**Resolution**: Task persistence belongs to the RUNTIME layer's already-real engine, not a new
-tracking mechanism bolted onto GraphDefinition. SPEC-23's correction stands unchanged — the control
-layer stays stateless. What connects them: a Task's own record can **cite** a GraphDefinition link
-(`sourceResourceId`/`linkId` from a `nextBestActions()` call) as *why* it exists — real traceability
-("this Task was opened because next-best-action surfaced 'affiliation-from-facility'") — without
-the control layer itself tracking anything. GraphDefinition stays the suggestion source; the
-runtime engine is the only thing that remembers what happened next.
+## 3. Starting point
 
-## 3. What already exists — the real starting point
+`registerPlan`, `onActionDone`, audit diffing and snapshot-compatibility checks already existed.
+Snapshots were local-only (localStorage), the audit log in-memory only. The durable-mirror pattern
+(`provider_composition`, `encounter_documents`) and the TTL lock primitive (`encounter_assignments`)
+already existed for sibling concerns; this spec generalizes them.
 
-Not building from scratch. Already real and working:
+## 4. Why single-writer, not merge
 
-- `workflowRuntime.js`: `registerPlan()` (starts/resumes an XState actor per `planId`),
-  `onActionDone()` (SPEC-21 §5 cross-plan triggering, live-verified), `diffAndLogTransitions()`
-  (per-action status diffing → `auditLog` entries), snapshot-compatibility discard-and-restart on a
-  changed PlanDefinition shape (a real bug this session's predecessor found and fixed).
-- `taskActorSnapshots.js`: one local row per `planId` (`{planId, snapshot, updatedAt}`), via
-  `createLocalCollection` — the SAME `collectionFactory.js` primitive `formData.js`/every other
-  collection uses (localStorage + additive LAN sync via `sharedServerSync.js` when a Tauri shared
-  server is reachable).
-- The proven durable-mirror pattern, twice already: `provider_composition` (migrations/0005) and
-  `encounter_documents` (migrations/0006) — one row per clinic/encounter, `PUT` on save, `GET` on
-  load, "eventually consistent, best-effort." `encounter_assignments` (same migration) additionally
-  proves a real **lock** primitive: atomic acquire via a conditional `ON CONFLICT ... WHERE`, TTL
-  expiry as the crashed-device safety net, `renew`/`release` — already live, already tested.
+An XState snapshot is one interdependent state tree. Two divergent snapshots cannot be merged
+safely; last-write-wins would silently lose a transition. So a running plan instance has **one
+writer at a time**, enforced by a TTL lock (acquire, renew while active, release on completion or
+handoff). Devices without the lock can read status but not advance the actor. The audit log is
+append-only, so even a write that bypassed the lock remains reconstructable.
 
-Every piece Task persistence needs a version of already exists for a sibling concern. This spec is
-mostly about generalizing and connecting them, not inventing new mechanisms.
+## 5. Data model
 
-## 4. The real gap in the existing snapshot model, found while designing this
+`ClinuxFlowTask` profiles FHIR `Task` for one action instance: `groupIdentifier` (the plan),
+`status` (mapped from runtime states per SPEC-19 §9), `for`, `owner`, `businessStatus.text`,
+`authoredOn`/`lastModified`, `note` (audit entries), and `reasonReference` (§2).
 
-`taskActorSnapshots.js` keys by `planId` alone and treats the actor's `getPersistedSnapshot()` as
-one opaque blob to replace wholesale. That's fine for one device driving one plan start-to-finish
-(SPEC-20's entry flow). It breaks for federation:
+**As built, the runtime does not emit `Task` resources.** It persists the actor snapshot and one
+audit row per transition. The profile is the target shape for when a worklist (SPEC-22 D1) needs
+queryable Tasks.
 
-- **Two devices/roles advancing the same journey concurrently** — a whole-snapshot replace is a
-  last-write-wins overwrite of an XState actor's internal state, not a merge. Unlike a flat FHIR
-  document (where `mergeGroupResponseItems`' per-group replace is safe because groups are
-  independent), a PlanDefinition actor's snapshot is one interdependent state tree — two divergent
-  snapshots can't be reconciled after the fact without real risk of silently losing one side's
-  transition.
-- **The audit log isn't persisted at all** — every transition/blocked-attempt entry SPEC-20 §4
-  designed for is gone on reload today.
+## 6. Storage
 
-**Resolution, reusing what's already proven rather than inventing conflict resolution**: a running
-Task instance is **single-writer**, enforced the same way `encounter_assignments`'s `kind:'lock'`
-already enforces "only one device actively works this encounter stage at a time" — generalize that
-same table/primitive to lock a `(taskId)` for whichever device/actor is actively driving it, TTL-
-renewed while active, released on completion or handoff. A device without the lock can still
-**read** the durable mirror (see §6) to show current status, it just can't advance the actor until
-it acquires the lock — the exact same shape Front Desk/Checkout's shared-worklist locking already
-has live users depending on. No new conflict-resolution algorithm needed; the audit log itself
-becomes the second half of the fix — append-only, never replaced (see §6), so even a lock-bypassed
-double-write is at least fully reconstructable after the fact instead of silently lost.
+**Local, every tier**: both collections use IndexedDB (`indexedDbCollectionFactory.js`):
+- `taskActorSnapshots`: the current snapshot, one row per plan key, replaced on each change.
+- `taskAuditLog` (`cf_task_audit_log_v1`): append-only, `{taskId, planId, actionId, from, to, at,
+  accountId}`, never updated.
 
-## 5. Data model — a real Task, not an invented shape
+**Cloud mirror, paid tier** (`requirePaidTier()`), migration 0010:
 
-FHIR's own `Task` resource is the real, standard fit ("a task to be performed, or a record that one
-was performed") — same "real resource, not invented" discipline SPEC-24 held StructureDefinition/
-GraphDefinition to. One `Task` per running (or completed) PlanDefinition **action** instance, not
-one per whole plan — a plan with several actions is several Tasks sharing a `groupIdentifier` (real
-FHIR field for exactly this: tasks that belong to the same overall request). Fields this app
-actually needs, nothing speculative:
-
-| Field | Source | Purpose |
+| Table | Key | Purpose |
 |---|---|---|
-| `id` | generated | this Task instance |
-| `groupIdentifier` | `planId` | which running plan this belongs to |
-| `status` | XState action status (`ready`/`active`/`done`/etc., mapped to Task's own real value set: `requested`/`in-progress`/`completed`/…) | current state, mirrors `snap.value[actionId]` |
-| `for` | the real FHIR resource this Task concerns, when there is one (an `Organization`/`PractitionerRole`/`Encounter` id) | ties a Task back to a real entity, not just an abstract action name |
-| `owner` | `{accountId}` of whoever currently holds the lock (§4), or last held it | federation across roles — who is/was doing this |
-| `businessStatus.text` | free text | human-readable ("Waiting on ABHA verification") |
-| `authoredOn` / `lastModified` | timestamps | |
-| `note` | one entry per `auditLog` transition — see §6 | the durable audit trail SPEC-20 §4 asked for |
-| `reasonReference` | when this Task was opened in response to a real `next-best-action.js` candidate (§2) — `{linkId, sourceResourceId}` from that call | traceability into the control layer, without the control layer tracking anything itself |
+| `task_snapshots` | `plan_id` | Latest snapshot JSON, `clinic_id`, `updated_at` |
+| `task_audit_log` | `id` | Append-only rows: plan, task, clinic, account, action, from, to |
+| `task_locks` | `plan_id` | Single-writer lock: holder, `expires_at` (a sibling table with the same shape as `encounter_assignments`, rather than overloading that table) |
 
-`clinuxflow-api/data/structure-definitions/` gets one more real profile,
-`ClinuxFlowTask.json`, same differential-constraint shape every other profile there already uses —
-not a special case.
+Routes: `GET/PUT /api/tasks/:planId/snapshot`, `POST/GET /api/tasks/:planId/audit`,
+`POST /api/tasks/:planId/lock` (plus `/renew`, `/release`), `GET /api/tasks/:planId/lock`.
+Client: `taskSync.js` (`pushTaskSnapshot`, `fetchTaskSnapshot`, `pushTaskAuditEntry`,
+`fetchTaskAuditLog`, lock functions), called from `workflowRuntime.js`'s persistence hooks. The
+local write always happens first; the cloud push is best-effort and a 403 means "stay local".
 
-## 6. Storage architecture — local-first primary, paid-tier durable mirror, same shape twice already
+**Durable key**: plans with a shared template id would collide across accounts (a real bug found in
+verification), so `entryWorkflow.js` uses `${planId}:${accountId}` as the durable key. Anonymous
+(pre-login) transitions stay local.
 
-**Local (every tier, every device, always)**: replace `taskActorSnapshots.js`'s localStorage
-collection with an **IndexedDB** one via `indexedDbCollectionFactory.js` (SPEC-19 §4's own
-precedent) — not a new backend, the second real use of a protocol built to be reused, and the right
-call here specifically because an append-only audit log genuinely can outgrow localStorage's 5-10MB
-quota the way AI Engine's own bulk records did. Two collections, not one, matching §4's "snapshot
-replace vs. audit append" split:
-  - `taskActorSnapshots` (unchanged shape, just a different backend) — current XState snapshot,
-    one row per `planId`.
-  - `taskAuditLog` (new) — **append-only**, one row per audit entry (`{taskId, planId, actionId,
-    from, to, at, accountId}`), never updated in place. This is what makes the single-writer lock's
-    "at least reconstructable" property in §4 real: even a rejected/late write still lands as its
-    own entry instead of overwriting anything.
+### 6.1 Security gap: no tenant check on reads or upserts
+`getSnapshot` and `listAuditLog` select by `plan_id` alone, and `upsertSnapshot` overwrites
+`clinic_id` on conflict. A paid account that knows another account's plan key (it embeds the
+account id, which linked affiliates can see) can read or replace that account's workflow snapshot
+and read its audit trail. Fix: scope reads by the caller's clinic (and account, for per-account
+plans) and reject upserts onto rows owned by another clinic. See SPEC-01 §10 item 0.
 
-**Durable mirror (paid tier only, `requirePaidTier()`-gated — same binary gate every cloud-durable
-route in this app already uses, SPEC-05 §6)**: two new D1 tables, deliberately shaped like
-`provider_composition`/`encounter_documents`'s own precedent, not a new pattern:
+## 7. Federation across roles
 
-```sql
-CREATE TABLE task_snapshots (
-    plan_id TEXT PRIMARY KEY,
-    clinic_id TEXT NOT NULL,
-    snapshot TEXT NOT NULL,       -- JSON, the same actor.getPersistedSnapshot() blob
-    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+No new authorization model: the same staff-or-linked-affiliate boundary as encounter assignment.
+Ownership moves the way encounter assignment does. Patients never own Tasks; a Task `for` a
+Patient is owned by the staff member acting for them.
 
-CREATE TABLE task_audit_log (
-    id TEXT PRIMARY KEY,
-    plan_id TEXT NOT NULL,
-    task_id TEXT NOT NULL,
-    account_id TEXT NOT NULL REFERENCES accounts(id),
-    action_id TEXT NOT NULL,
-    from_status TEXT,
-    to_status TEXT,
-    created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-CREATE INDEX idx_task_audit_log_plan ON task_audit_log (plan_id, created_at);
-```
+## 8. What this does not change
 
-`task_locks` is not a new table — it's `encounter_assignments` (migrations/0006) with its own
-`kind`/`stage` CHECK constraints widened to cover a `planId` the same way they cover an
-`encounterId` today (or, if that reads as overloading one table too far once actually scoped,
-a sibling table with the identical column shape and the identical `acquireLock`/`renewLock`/
-`releaseLock` functions from `encounter-coordination-db.js` copied, not redesigned).
+GraphDefinition, next-best-action and the validator stay pure. Registration stays untracked. Free
+tier behavior is unchanged, apart from the two new collections also syncing over the LAN.
 
-Sync direction matches `encounterCoordination.js`'s own established shape exactly: explicit
-`pushTaskSnapshot(planId, snapshot)` / `fetchTaskSnapshot(planId)` functions, called by
-`workflowRuntime.js`'s own `persistSnapshot`/`loadPersistedSnapshot` injection points (already
-built to accept exactly this kind of swap-in) — local write always happens first and always
-succeeds; the durable push is best-effort on top, same "local-first collection is source of truth
-between syncs" contract every other paid-tier mirror in this app already has. Free tier gets the
-existing LAN-only `sharedServerSync.js` path for these two new collections for free, zero new code
-— that wiring is already additive and automatic for anything built on `createLocalCollection`/
-`indexedDbCollectionFactory.js`.
+## 9. Placement
 
-## 7. Federation across roles — visibility, not new access control
+Runtime layer in both repos (`src/routes/runtime.js`, `src/lib/runtime/task-db.js`;
+`src/data/runtime/taskSync.js`).
 
-No new authorization model needed — reuse the exact staff-or-linked-affiliate trust boundary
-`POST /api/encounters/:id/assign` and `GET /api/chat/signal` already enforce (same-clinic staff, or
-an affiliate already linked via `facility_affiliates`). A Task's `owner` can be reassigned the same
-way `EncounterCoordinationDb.assignEncounter` already reassigns an encounter — this is not a new
-concept, just the same one, applied to a Task instead of an encounter. Patient-mediated journeys
-(SPEC-21 §6's own resolution: Patient never holds a login) never own a Task directly — a Task
-`for`-referencing a Patient resource is always `owner`-ed by the staff member acting on their
-behalf, matching how Patient capture already works everywhere else in this app.
+## 10. Build record
 
-## 8. What this deliberately does not change
-
-- GraphDefinition/`next-best-action.js`/`conformance-validator.js` — untouched, stay pure and
-  stateless. §2's `reasonReference` is a one-way citation, never a write-back.
-- No PlanDefinition/state-machine tracking is added for Facility/Provider/Affiliate/Patient
-  registration itself — SPEC-23's correction is not being reversed by this spec.
-- Free tier's actual behavior doesn't change — it already gets LAN sync for local-first collections
-  today; it just also now gets it for these two new ones, automatically.
-
-## 9. Module placement (this session's own NIST ZTA reorganization)
-
-Squarely runtime layer, both repos — no new boundary decision needed, the reorg already drew this
-line: `clinuxflow-api/src/routes/runtime.js` (+ `src/lib/runtime/task-db.js`, sibling to
-`encounter-coordination-db.js`), `clinux-frontend/src/data/runtime/taskSync.js` (the push/fetch
-functions §6 names), `src/workflow/` unchanged in shape — `workflowRuntime.js`'s own injection
-points are the seam, not a rewrite.
-
-## 10. Build sequencing (next pass, not this one)
-
-1. `ClinuxFlowTask.json` StructureDefinition (§5) — grounds the shape before any code.
-2. `taskAuditLog` local collection (IndexedDB) + wire `workflowRuntime.js`'s `logAudit()` to write
-   through it instead of the in-memory array only — real, immediately-useful even before any
-   durable mirror exists (survives a reload today).
-3. Migration: `task_snapshots` + `task_audit_log` tables, plus the lock primitive (§6).
-4. `clinuxflow-api` routes: GET/PUT task snapshot, POST audit append, lock acquire/renew/release —
-   copy `encounter-coordination-db.js`'s own functions, don't redesign them.
-5. `taskSync.js` push/fetch + wire into `workflowRuntime.js`'s injection points.
-6. Live-verify: two simulated devices/roles trading the same `planId`'s lock, confirm the audit log
-   reconstructs the real sequence across both.
+1. ~~`ClinuxFlowTask` profile~~: done.
+2. ~~Local IndexedDB audit log, wired into `logAudit()`~~: done. This also fixed a page-reload
+   resumability race and needed a test-environment IndexedDB polyfill.
+3. ~~Migration 0010~~: done.
+4. ~~Routes, modeled on the encounter coordination accessors~~: done.
+5. ~~`taskSync.js` wired into the runtime~~: done.
+6. Live verification: done against a real `wrangler dev` + local D1 with curl (snapshot
+   round-trip, audit append and list, lock acquire, contention and release). The two-browser,
+   two-role handoff through the UI has not been run.
+7. New: fix §6.1.

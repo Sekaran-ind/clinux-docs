@@ -1,181 +1,202 @@
-# Specification 13: FHIR Workflow, Documents & Conformance — Closing the Loop Around Rooms
+# SPEC-13: FHIR Workflow, Documents and Conformance
 
-## 1. Objective
+| | |
+|---|---|
+| **Status** | Partially built. Built: extraction hardening (§5.3), the PlanDefinition → XState runtime (§2, §2.3), document Bundle assembly (§5.4), local StructureDefinitions (via SPEC-24). Not built: Task-status lifecycle for rooms (§2.2), registration-authored plans and credentialing Tasks (§4), attestation, CapabilityStatement (§6). |
+| **Last reviewed** | 2026-09-26 |
+| **Code** | `clinux-frontend/src/workflow/{planDefinitionRunner,workflowRuntime,entryPlanDefinition,authPlanDefinition}.js`, `clinuxflow-api/src/lib/shared/{local-extractor,composition-assembler}.js`, `POST /api/workflow/{extract,assemble-document}` |
+| **Related** | SPEC-12, SPEC-14 (runtime choice), SPEC-18 (authoring), SPEC-19 §9 (status mapping), SPEC-24 (profiles), SPEC-25 (persistence) |
 
-Extend `docs/SPEC-12-ROOMS-AND-BOUNDED-CONTEXT-SLOT-FILLING.md` with the three layers it deliberately left open: how rooms get sequenced and assigned across a whole visit (**FHIR Workflow**), what becomes of captured data once a room completes (**FHIR Documents**), and whether the resulting surface should be formally declared for conformance (**CapabilityStatement**). Nothing in this spec is built yet except where explicitly marked "verified this session" against real source. The three-way separation of concerns, restated precisely: **SPEC-12 governs within a room** (bounded-context slot-filling); **this spec's §2-§4 govern between rooms** (sequencing, assignment, credentialing); **§5 governs after a room** (the authorized record); **§6 governs how any of this gets declared/checked** (conformance).
+## 1. Scope
 
-## 2. FHIR Workflow — resource mapping
+SPEC-12 governs capture **within** a room. This spec governs what happens **between** rooms
+(sequencing, assignment, credentialing: FHIR Workflow), **after** a room (the authorized record:
+FHIR Documents), and how the resulting surface is **declared and checked** (conformance).
 
-**Verified this session**: no `Task`, `PlanDefinition`, or `ActivityDefinition` exists anywhere in `clinux-frontend` or `clinuxflow-api` — this layer is genuinely greenfield, not a reinterpretation of something already there (contrast with §5, where the equivalent check found the opposite).
+## 2. FHIR Workflow mapping
 
-FHIR's Workflow module's three tiers map directly onto "rooms" without strain:
-
-| Tier | Resource | Role here |
+| Tier | Resource | Role |
 |---|---|---|
-| Definition | `PlanDefinition` | The visit protocol — e.g. "Standard OPD Visit" — its `action`s are the rooms, in sequence |
-| Definition | `Questionnaire` | Already the per-room definition (SPEC-12) — `PlanDefinition.action.definitionCanonical` should point at it directly rather than introducing `ActivityDefinition` as a fourth resource type. Recent FHIR versions allow `Questionnaire` as a valid `action.definition[x]` target for exactly this SDC-style case — **not verified against this system's specific FHIR version target, flagged open (§7)** |
-| Request | `Task` | The room *instance* — `Task.focus` → the room's Questionnaire, `Task.for`/`Task.encounter` → patient/visit, `Task.owner` → who's responsible, `Task.status` → the room's lifecycle |
-| Event | `QuestionnaireResponse` | Already the event resource (SPEC-12) — `QuestionnaireResponse.basedOn` → the Task it fulfills; `Task.output` references it back |
+| Definition | `PlanDefinition` | The protocol (for example "Standard OPD Visit"); its actions are rooms or steps |
+| Definition | `Questionnaire` | What a step captures; referenced from `action.definitionCanonical` rather than adding `ActivityDefinition` |
+| Request | `Task` | One running step: `focus` (the Questionnaire), `for` (the subject), `owner`, `status` |
+| Event | `QuestionnaireResponse` | What was captured; `basedOn` the Task, and the Task's `output` points back |
 
-Deliberately **not** introducing `ActivityDefinition` as a separate resource — `Questionnaire` already fills the "what to capture" definitional role SPEC-12 built around; adding a fourth resource type here would be complexity without a corresponding gap to fill.
+**Built**: `planDefinitionRunner.js` compiles a PlanDefinition into an XState v5 `parallel`
+machine, one region per action with states `pending → ready → active → done`. Features:
+- `relatedAction` becomes an `always` guard with `stateIn`, AND-gated over all targets.
+  **The relationship code is not distinguished**: `after-start`, `after-end` and the rest all
+  wait for the target's `done`.
+- `services[actionId]` lets `active` invoke a real async function (`fromPromise`, `onDone`,
+  `onError`); the resolved value is kept in context as `result_<actionId>`, errors as
+  `error_<actionId>`.
+- `action.repeatable` makes `done` accept `FOCUS` again instead of being final (login, logout,
+  change password can recur; register cannot).
 
-### 2.1 Sequencing and specialty-conditioning — supersedes SPEC-12 §4.7 and closes SPEC-12 §8's open item
+`workflowRuntime.js` is the only thing that sends events to actors (one RxJS bus, one dispatcher,
+factory-built so tests don't share state). It persists through `actor.subscribe()` (which captures
+asynchronous invoke results), writes an audit entry per region transition, discards incompatible
+snapshots, and offers `onActionDone(planId, actionId, cb)` for cross-plan triggers.
 
-SPEC-12 §4.7 invented an ad hoc "declared precondition between rooms" mechanism ("Room X requires Room Y's document at status≥published for section Z"). **Replace it with `PlanDefinition.action.relatedAction`** (`relationship: before-start | before-end | concurrent-with-start | after-end | ...`, optional `offsetDuration`) — the standard field for exactly this. Same effect, standards-native instead of invented.
+Live plans: `ENTRY_PLAN_DEFINITION` (register, login, forgot password, change password, logout;
+SPEC-20) and `AUTH_PLAN_DEFINITION` (the closed-loop test fixture). The outpatient visit is not
+yet a plan (SPEC-04 §4).
 
-SPEC-12 §8 left open "how Consultation's specialty-parameterized section graph gets selected." **Closed by `PlanDefinition.action.condition`** — evaluated against the Encounter's specialty at Task-generation time, this is the native mechanism for conditional inclusion of an action. No separate selection mechanism needed.
+### 2.1 Sequencing and specialty conditioning
+Use `PlanDefinition.action.relatedAction` for ordering (replacing SPEC-12 §4.7) and
+`action.condition` for conditional inclusion, such as a specialty-specific step (closing SPEC-12's
+specialty question). The runtime implements `relatedAction` only; `condition` is authored
+(SPEC-18) but never evaluated.
 
-### 2.2 Room lifecycle — refines SPEC-12 §4.6
+### 2.2 Room lifecycle on Task.status
+Bind a room's lifecycle to `Task.status`, not `QuestionnaireResponse.status`. SPEC-19 §9 maps the
+runtime's four states onto the real R4 codes (`pending→draft`, `ready→requested`,
+`active→in-progress`, `done→completed`); SPEC-25's `ClinuxFlowTask` profile and D1 mirror use that
+mapping. `received/accepted/rejected`, `on-hold`, `failed`, `cancelled` and `entered-in-error` are
+not modeled.
 
-SPEC-12 §4.6 proposed a two-axis draft/published/complete model on `QuestionnaireResponse.status`, needing a custom extension for the "published but not yet workflow-complete" middle state (that status's native value set has no such state). **`Task.status`** (`draft | requested | ready | accepted | in-progress | on-hold | completed | ...`) is the better-fitting native home for this — it already covers most of the two-axis model in one field. Revise SPEC-12 §4.6 to bind the room-lifecycle state machine to `Task.status`, not `QuestionnaireResponse.status`.
+### 2.3 The closed loop
+Captured response → Task completes → dependent actions re-evaluate → the next Task becomes
+`ready` → Cübo shifts scope or notifies its owner → repeat, without anyone clicking "next".
+**Built for the runtime half**: `always` transitions re-check on every change, so there is no
+separate re-evaluation step, and `onActionDone` carries the result across plans (SPEC-21 §5 uses
+it for role-based suggestions). **Not built**: owner notification and Task ownership (§4.3).
 
-### 2.3 The closed loop, precisely
+## 3. Cübo threads and the workflow tiers
 
-"Agentic loop" should cash out to a concrete mechanism, not a figure of speech: QuestionnaireResponse captured → Task completes → completion re-evaluates the PlanDefinition's `relatedAction` graph → the Task gated on this one becomes `ready` → Cübo shifts its active scope to that Task and/or notifies its `owner` (via the existing P2P chat infrastructure, `userChats.js`/`p2pChat.js`) — autonomously, without a human clicking "next." Event → re-evaluate Definition → generate/unblock next Request → Cübo acts → repeat.
+A thread row is `{id, category, title, pinned, timestamp, encounterId, messages}`. A thread with no
+`encounterId` works at the Definition tier (registration, authoring); one with an `encounterId`
+works inside one encounter. SPEC-16 later inverts this so the Task is primary and the thread is
+derived; that is still design.
 
-## 3. Cübo thread model alignment
+## 4. Registration as workflow authoring and credentialing
 
-**Verified this session**, correcting an earlier assumption in conversation: `chatThreads.js:1-7` shows a thread row is `{ id, category, title, pinned, timestamp, encounterId, messages }`. `category` is a free label (`front-desk`, `billing`, `ai-engine`, ...); `encounterId` is optional/additive, present only on threads created via a `<Cubo :encounter-id>` prop. Not two named category values — one dimension plus an optional flag.
+### 4.1 The hospital authors its visit protocol
+Once a facility declares its services (`HealthcareService`), a PlanDefinition should be
+**templated** from its specialties and confirmed by the admin, not hand-authored. **Not built**,
+and SPEC-23 later ruled that registration itself is not a tracked workflow; the templating idea
+now belongs to Speciality Rooms.
 
-This maps cleanly onto §2's tiers without new thread machinery:
+### 4.2 Practitioner credentialing as a Task
+Fine-grained privileges belong on `PractitionerRole.healthcareService`. Granting them is a `Task`
+whose `for` is the Practitioner; completing it updates the role. Same machinery as patient work,
+different subject. **Not built.**
 
-- **No `encounterId`** → Cübo operating at the **Definition tier** — registration, credentialing, workflow authoring (§4).
-- **`encounterId` present** → Cübo operating at the **Request/Event tier**, inside one Encounter. One continuous thread per encounter already matches SPEC-12 §4.2's scope-stack design — the *active* Task/room scope shifts within that single thread as Tasks become `ready`; no thread-per-Task split needed.
+### 4.3 Primary and supporting roles
+Co-staffing is two linked Tasks: a primary (`owner` = the credentialed practitioner) and a
+supporting one (`partOf` the primary), both with the same `focus`. At document time the primary
+owner becomes `Composition.attester`, supporting participants become `Composition.author`.
+**Not built.**
 
-**Gap found, not a design flaw**: registration/credentialing conversation currently has nowhere to go but the generic `ai-engine` category. Once §4's registration-as-workflow-authoring and credentialing-as-Task are real, dedicated categories (`hospital-workflow-design`, `practitioner-credentialing`) would read more clearly — small addition, not a redesign.
-
-## 4. Registration journeys as workflow and credentialing authors
-
-### 4.1 Hospital registration designs the PlanDefinition
-
-**Verified this session**: `HealthcareService` is already a named, intended resource type (`Onboarding.vue:42` — "Organization/Practitioner/HealthcareService"), though `local-extractor.js` doesn't yet give it the automatic reference-linking treatment it already gives `PractitionerRole`↔Organization (§5.2).
-
-Once `HospitalOnboarding.vue` captures which Services a clinic offers, that's the direct input a `PlanDefinition` needs. Don't ask an admin to hand-author `action`/`relatedAction`/`condition` — **template a PlanDefinition from SPEC-08's already-resolved 12-specialty cluster**, let the admin confirm/adjust room sequencing and specialty gating on top of a sensible default, matching the existing "seed, don't force free-form authoring" pattern `seedSystemForms()` already uses for the Questionnaire catalog. This is the concrete answer to "who authors the PlanDefinition": the clinic admin, assisted, during registration — not a hand-coded one-size-fits-all protocol.
-
-### 4.2 Practitioner registration's training step
-
-**Verified this session**: `abdmSchema.js`'s `STAFF_FIELDS` (lines 104-128) captures coarse registration data only — `staff_specialty` (a label), `staff_hp_category_code`/`staff_hp_subcategory_code` (HPR's own professional categorization). Nothing about which specific services/procedures a given practitioner is privileged to perform. No existing credentialing concept anywhere in either repo (the only "credential" hits found are auth/API credentials, unrelated).
-
-- **Fine-grained skill data belongs on `PractitionerRole.healthcareService`** — a repeating link from a practitioner's role to specific `HealthcareService` entries they're authorized for. Shape-wise this is a nested, repeating group (many services per practitioner), not a flat scalar field — closer to how Care Team already handles multiple staff records than to STAFF_FIELDS' flat list.
-- **The training step itself is a `Task`, not a separate mechanism** — `Task.for` can reference a Practitioner directly (Task isn't patient-only). A credentialing Task, instantiated from its own PlanDefinition, `for` the practitioner being onboarded. On `Task.status = completed`, that Event updates `PractitionerRole.healthcareService`. Practitioner credentialing and patient encounters run through the **identical** Definition→Request→Event machinery — same resources, different `for` target. Not a new subsystem.
-
-### 4.3 Primary author vs. supported role
-
-Model co-staffing a room as **two linked `Task`s**, not one Task with a bolted-on participant list: a primary Task (`Task.owner` = the practitioner whose `PractitionerRole.healthcareService` covers this room's service) and a supporting Task (`Task.owner` = the assisting participant, `Task.partOf` → the primary Task), both sharing `Task.focus` (the room's Questionnaire). This is the native field for exactly this relationship.
-
-This has real downstream consequence at the Documents layer (§5): the primary Task's owner becomes `Composition.attester` (`mode: professional` or `legal`); supporting participants become `Composition.author` entries — contributed content, not attested. Same underlying fact ("who did this work"), different FHIR field depending on which tier is asking.
-
-### 4.4 Open decision, not assumed either way
-
-Should `Task.owner` and `Composition.attester` always coincide, or can a resident be the Task owner (does the work) while a supervising attending remains the attester (legally responsible)? That's the real shape of "supported role," and it argues for allowing them to diverge deliberately — but this is a genuine product/clinical-governance decision, not something this spec should resolve silently. Flagged in §7.
+### 4.4 Open governance question
+May `Task.owner` (who did the work, for example a resident) differ from `Composition.attester`
+(who is legally responsible, for example the attending)? It should be allowed, but this is a
+clinical-governance decision, not a technical one.
 
 ### 4.5 Worked example
+A resident and an attending co-staff a cardiology consultation. The plan (cardiology-conditioned)
+creates a Consultation Task. The resident's role doesn't yet cover independent cardiology consults,
+so they get the supporting Task. On completion, extraction runs and the Composition is assembled
+with the attending as attester and both as authors.
 
-A resident and attending cardiologist co-staff a Consultation. The Hospital's PlanDefinition (authored at registration, cardiology-conditioned per §2.1) generates a Consultation Task for the encounter. The resident's `PractitionerRole.healthcareService` doesn't yet cover independent cardiology consults (their credentialing Task is incomplete), so they get the supporting Task, `partOf` the attending's primary Task. Both work within the same bounded Consultation scope (SPEC-12 §4.2), inside the encounter's single Cübo thread (§3). On completion, extraction runs (§5.2), Composition assembles with the attending as `attester` and both as `author`. If the resident later completes their credentialing Task, future PlanDefinition instantiations can assign them the primary Task directly.
+## 5. FHIR Documents
 
-## 5. FHIR Documents — Composition as the authorized record
+### 5.1 Why Composition is not redundant
+`Questionnaire.item` nesting structures capture. A `Composition` is a different thing: an
+authored, attestable, versioned document assembled from already-extracted resources.
 
-### 5.1 Correction to an earlier framing in this same working conversation
+### 5.2 Extraction
+`ComprehensiveLocalExtractor.extract(questionnaire, response, options)` reads each item's
+`definition`, walks the response, and produces linked resources (Organization, Location,
+HealthcareService, Practitioner, PractitionerRole, OrganizationAffiliation, Consent, Patient,
+Encounter, Observation, Condition, PlanDefinition and more), including references such as
+`PractitionerRole.practitioner` and `Location.managingOrganization`.
 
-An earlier turn characterized bringing Composition into the design as "a terminology fix, not a design change" — that undersold it. SPEC-12 §4.2's bounded-context model correctly runs on `Questionnaire.item`/`QuestionnaireResponse` for capture, and that part stands unchanged. But Composition is not a redundant name for something `Questionnaire.item` nesting already does — it's a distinct, necessary resource for a job Questionnaire structurally cannot do: an authored, attestable, versioned document assembled from already-extracted discrete resources. Additive, not redundant.
+### 5.3 Hardening (all built and regression-tested)
+1. **No silent drops.** An answered item with no `definition`, or a malformed one, adds to the
+   result's `.warnings` array (not serialized, so API responses are unchanged).
+2. **Stable identity.** Pluggable `identityResolvers`; Practitioner resolves by name plus
+   facility (not truly unique; a stronger anchor such as an HPR ID is the upgrade path). Generic
+   saves avoid duplicates by requiring the caller's own record id (SPEC-24's resource API).
+3. **Repeating groups no longer collapse.** The resource cache was keyed by type alone, so N
+   staff produced one Practitioner. Groups are now classified as separate-instance or
+   array-field automatically from path structure.
+4. **Genuinely nested groups.** The extractor walks a stack of enclosing group frames, and nested
+   instance counters are keyed by the full frame path (SPEC-18 §7 step 3, SPEC-22 §3).
+5. **FHIR array cardinality.** `FHIR_ARRAY_PATHS` makes `telecom`, `identifier`, `address`,
+   `type` and similar real arrays, gives each linkId its own slot (so `staff_phone` and
+   `staff_email` both survive), and keeps every MultiSelect answer.
+6. **Extensions carry URLs.** ABDM fields are distinct extensions, not anonymous entries.
 
-### 5.2 Extraction already exists — verified this session, more mature than assumed
+**Still open**: `ContactPoint.system` is never set, because no YAML field supplies it. The
+profiles slice `telecom` by `system`, so a mobile-number slice can never be satisfied and
+`Patient` conformance cannot reach `valid: true` (SPEC-24 §7). Fix with Hidden-field defaults per
+telecom field.
 
-`clinuxflow-api/src/lib/local-extractor.js` — `ComprehensiveLocalExtractor.extract()`, its own header comment: "a strict local definition-based SDC extraction operation." It reads each Questionnaire item's `definition` string (`http://hl7.org/${resourceType}#${field.path}` — the exact field `yaml-to-questionnaire.js:183` already writes, using the same `field.path` the compiler validates against its allowed-shard-path graph at `yaml-to-questionnaire.js:97-110`) and walks a completed `QuestionnaireResponse`, producing real, interconnected discrete resources: Organization, PractitionerRole, Location, Observation, Condition, Patient, Encounter. It already does cross-resource reference-linking (`PractitionerRole.practitioner`/`.organization`, `Location.managingOrganization` — `local-extractor.js:125-134`). Extraction is not something to design; it's something to harden and build on.
+### 5.4 Document assembly
+`FhirDocumentAssembler.assemble()` (`POST /api/workflow/assemble-document`) builds a
+`Bundle{type:"document"}` with the Composition first and every referenced resource present as a
+`urn:uuid:` entry. Sections default to one per resource type. `status` defaults to `preliminary`
+and `Composition.type` is plain text (no invented LOINC code). **Nothing in the frontend calls it
+yet**, nothing signs it, and nothing stores or sends it anywhere.
 
-### 5.3 Two real risks found reading it, not hypothetical — both now fixed and test-verified
+### 5.5 The one exception to "never copy"
+A `final`, attested Composition is a deliberate snapshot; that is what signing means. Amendments
+create a new version (`relatesTo: replaces`), which only works if resource identities are stable
+(§5.3 item 2).
 
-- **Silent drop on unmapped/malformed `definition` strings** — was `local-extractor.js:56-57`: `if (uriFragments.length < 2) return;`, no log, no error, the answer just disappeared. **Fixed**: both the "no blueprint metadata for an answered linkId" case and the "malformed definition string" case now `console.warn` and collect onto the returned array's `.warnings` (non-breaking for the 4 existing call sites — `JSON.stringify` only serializes an array's indexed elements, so `.warnings` is invisible to today's API responses, inspectable by anything holding the array directly). Covered by `local-extractor.test.js`.
-- **No stable resource identity across repeated extraction** — most resource types minted a fresh `local-res-${uuidv4()}` on every call. **Fixed for `Practitioner`**, via a pluggable `identityResolvers` mechanism (`extract()`'s new 3rd `options` param) rather than a hardcoded scheme — different resource types need different anchors, and `Organization`/`Observation`/`Condition` deliberately have no resolver registered (a facility singleton doesn't need one; event-shaped resources should get a new instance per new answer, not this treatment). The originally-intended anchor — the virtual-room role catalog (`clinuxflow-api/data/clinic-specialities.json`, compiled from `config/clinic-specialities/virtual-rooms/`, the same catalog `stores/cubo.js`'s `virtualRoom` picker already reads) — **isn't fully constructible yet**: verified this session that `system-provider-composition-v1.yaml`'s `section_staff` block has no field referencing that catalog's `folder`/`file` identifiers at all. Scoped to what's actually reliable today: `Practitioner.name.text` + an optional `context.facilityId`, a known and documented limitation (a name isn't truly unique), with the upgrade path spelled out in `_practitionerIdentity()`'s own comment. Covered by `local-extractor.test.js` (same-input → same-id, different-name/different-facility → different-id, reference-linking resolves against the *resolved* id).
+## 6. Conformance
 
-**Third risk found and fixed this session, more severe than either of the above — repeating groups collapsed entirely.** Confirmed live, not from static reading: `resourceCache` was keyed only by `resourceType`, so a `repeats: true` group's multiple instances all wrote into ONE shared cache entry — only the *last* repetition survived, every earlier one silently destroyed. Direct proof before the fix: extracting 2 Staff members produced 1 Practitioner output — "Dr. Priya Rao" gone entirely, only "Dr. Arjun Mehta" remained. This affects every real `repeats: true` block in the system today — `system-provider-composition-v1.yaml`'s Staff, Location, Services, Hours, Consent, and Appointment blocks all have this exposure, not just SPEC-18's new draft.
+### 6.1 CapabilityStatement
+FHIR's machine-readable declaration of supported resources, interactions, profiles and search
+parameters. `kind`: `requirements` (a target), `capability` (self-attested), or `instance` (one
+deployment).
 
-**Fixed** by distinguishing two real shapes, detected automatically from the compiled Questionnaire's own structure (no new YAML syntax): **separate-instances** mode (a group's child field paths diverge immediately after the resourceType root — `Practitioner.name.text` vs. `Practitioner.telecom.value` — each repetition now correctly produces its own resource) vs. **array-field** mode (child paths share a common ancestor segment beyond the resourceType root — `PlanDefinition.action.id`/`.title` both under `action` — each repetition now correctly becomes one entry in that array). A single-leaf-field group (e.g. `Location.name` alone) is a real degenerate case that initially misclassified as array-field (a lone path trivially "agrees with itself") — caught in testing, fixed to require 2+ converging fields before array-field mode applies. 5 new tests (`local-extractor.test.js`), full suite re-run clean at 159/159.
+### 6.2 Regulatory weight
+It becomes load-bearing when M2/M3 certification is pursued (SPEC-11 §5). Before that it is
+internal documentation and a test anchor.
 
-**Fourth risk, found immediately after the third and fixed the same session — GENUINE nested repeating groups.** The third-risk fix above was correct for one group owning one array, but couldn't reconcile two *independently*-repeating groups meant to share the same array (confirmed live via `docs/SPEC-18-PLANDEFINITION-AUTHORING-VIA-YAML-PIPELINE.md`'s draft: `PlanDefinition.action[i].relatedAction[j]` modeled as two sibling top-level tables corrupted each other on extraction). Traced to the real cause — `yaml-to-questionnaire.js` and its schema had never supported a `fields` entry being itself a nested group, even though the actual vendored LHC-Forms library (`lforms`'s own `sdc-support.md`, checked directly) already supports arbitrarily nested repeating groups and `enableWhen`. Fixed at the source: the compiler and its generated schema now support real recursive `type: "group"` fields (also picked up group-level `skipLogic`→`enableWhen` for free), and this extractor now walks a genuine **stack** of enclosing group frames (`_navigateToWriteTarget`, replacing the single-level context and the old single-segment `_setValueAtPath` override from the third-risk fix) instead of one flat context. `relatedAction` nested inside its owning `action` now extracts correctly because there's only one group being repeated at each level — nothing left to reconcile. Full detail and worked example: SPEC-18 §7 step 3. Suite re-run clean at 163/163.
-
-**UPDATE — fixed, in the Facility/Provider/Patient FHIR-native onboarding pass** (see `docs/SPEC-23-SPECIALITY-ROOM-AND-FIXED-ORCHESTRATION-ANCHORS.md`'s build). The sibling-collision gap named below was real and confirmed live before fixing, not assumed: `staff_phone`/`staff_email` both mapping to `Practitioner.telecom.value` — only `staff_email` survived a real extraction. A SECOND, equally serious issue was found alongside it while grounding this: every non-`component`/`coding` array-typed FHIR property (`telecom`, `identifier`, `address`, `type`, ...) was written as a bare object, not a JSON array — structurally invalid for a real HAPI server regardless of the collision. Both share one root cause and are fixed together: `FHIR_ARRAY_PATHS` (new, `local-extractor.js`'s own header) is a real, careful FHIR R4 cardinality reference for every path `system-provider-composition-v1.yaml`/`system-patient-profile-v1.yaml` actually use, generalizing the exact array-slot-allocation idea `component`/`coding` already proved (not a new mechanism) — `_setValueAtPath` now checks it at every path segment, and the per-leaf-path ledger now allocates each distinct linkId its own base slot (a multi-answer field, e.g. a MultiSelect, claims as many consecutive slots as it has values) instead of one fixed index. A third real bug found and fixed in the same pass: a `MultiSelect` field's answers were truncated to `answer[0]` alone — every selected value is now extracted and written. `component`/`coding`'s existing hardcoded behavior is untouched, byte-for-byte, to avoid regressing `system-encounter-composition-v1.yaml`/the SOAP-kit samples that already depend on it.
-
-6 new regression tests in `local-extractor.test.js`, run against the REAL, unmodified `system-provider-composition-v1.yaml` through the real compile+extract pipeline (not a synthetic fixture) — confirming `staff_phone`/`staff_email` both survive as a real 2-element `telecom` array, all 9 ABDM `Practitioner.identifier.value` fields survive as a real 9-element array, a 3-selection MultiSelect keeps all 3, `Practitioner.name.given` correctly holds first+middle name in ONE shared `name[0]` entry (not two separate ones), `Organization.type`'s real 4-way collision survives as a real 4-element array, and `Appointment.participant.actor` (`appt_patient`/`appt_staff`) survive as two separate participants. Full `clinuxflow-api` suite re-run clean at 197/197.
-
-**Still genuinely open, not fixed here**: `ContactPoint`/telecom entries have no `.system` (`'phone'`/`'email'`/`'url'`) tagging — the Practitioner identity resolver still can't reliably pick "the email one" out of a `telecom[]` array by position alone (see `local-extractor.js`'s own `_practitionerIdentity` comment, updated to reflect this). `Practitioner.extension` entries (staff_role/staff_specialty) still have no `.url` distinguishing which semantic field each one is — real FHIR extensions require this; not invented here without a real URL scheme decided first.
-
-### 5.4 What's actually missing
-
-**UPDATE — built**, in the Facility/Provider/Patient FHIR-native onboarding pass (`docs/SPEC-23-SPECIALITY-ROOM-AND-FIXED-ORCHESTRATION-ANCHORS.md`'s build). New `clinuxflow-api/src/lib/composition-assembler.js` (`FhirDocumentAssembler.assemble()`) + `POST /api/workflow/assemble-document`. Real, not a bare `Composition` — per the FHIR spec's own words ("a Composition resource by itself is only the 'cover sheet'... the standard mechanism for exchanging a set of resources as one unit is to package them as a Bundle with type=document"), this builds a genuine `Bundle{type:'document'}` with the Composition as `entry[0]`, satisfying FHIR's real document self-containment rule (every resource a `section.entry` references is guaranteed present as a Bundle entry, using `urn:uuid:` fullUrls, since both are built from the same extractor-output array in one pass). One section per distinct resourceType present by default (a caller-supplied `sectionPlan` can override grouping/titles/order). `status` defaults to `'preliminary'`, deliberately — never silently claims freshly-extracted, unattested onboarding data is `'final'`; real attestation (`Composition.status: 'final'`, `attester` populated from §4.3's primary-Task owner) is still a separate, not-yet-built workflow step. `Composition.type` is a plain-text `CodeableConcept` (no invented LOINC code — this app's registration documents don't map cleanly onto an existing one; asserting a coding system it doesn't conform to would be worse than honest text). 13 new tests (`composition-assembler.test.js`) plus 4 new HTTP-level tests (`index.test.js`), including a real end-to-end compile→extract→assemble chain against the actual `system-provider-composition-v1.yaml`, not a synthetic fixture. `clinuxflow-api` suite clean at 214/214.
-
-**Still genuinely missing**: any actual HAPI/FHIR-server connection — this only ASSEMBLES the document; storing or transmitting it anywhere is a separate, not-yet-built step. Real attestation (turning `'preliminary'` into a genuinely signed `'final'` document) likewise not built.
-
-### 5.5 The one legitimate exception to SPEC-12 §4.1's "never materialize a copy" rule
-
-SPEC-12 §4.1 established: no page holds its own derived/cached copy of another room's data, everything reads live. A **finalized `Composition`** (`status: final`, `attester` populated) is the one correct exception — attestation is supposed to freeze a snapshot; that is what signing a document means. The rule holds while a Task is `in-progress` (any preview recomputes live, always); it stops applying, correctly, the moment the Task completes and the record is attested. A later amendment produces a **new** Composition version via `Composition.relatesTo` (`code: replaces`), never an in-place mutation of the signed one — this is also why §5.3's identity-stability gap matters: `relatesTo` versioning only works if the resources being re-referenced keep the same identity across runs.
-
-## 6. Conformance — should a CapabilityStatement be authored in parallel?
-
-### 6.1 What it is
-
-`CapabilityStatement` is FHIR's own machine-readable conformance declaration: which resource types, which interactions, which profiles, which search parameters, which operations, which security scheme a system supports. `kind` is one of `instance` (one deployed system's actual live configuration), `capability` (a self-attested "this running system implements X"), or `requirements` (a target — "a conformant system should support X" — without claiming anything is built yet).
-
-### 6.2 Real regulatory relevance — currently latent, not active
-
-SPEC-11 named NRCeS-profile FHIR compliance and STQC security assessment as real certification requirements for ABDM's M2/M3 (HIP/HIU status) — and explicitly deferred pursuing them. A `CapabilityStatement` has genuine teeth specifically once M2/M3 certification is actually pursued; before that, it isn't load-bearing for any external gate. Worth being honest about this rather than overselling urgency.
-
-### 6.3 Value independent of that deferral
-
-- **Precise internal documentation** of the actual resource/profile/operation surface this system supports — the same "verified, not assumed" discipline already running through every spec in this series, as a persistent, structured artifact instead of scattered comments.
-- **A conformance-testing anchor** against exactly the defect class this whole working session has been chasing — Defect 1 (data captured, not displayed), Defect 4 (a coded field silently accepting free text), §5.3's extraction risks (silent drop, unstable identity). A declared CapabilityStatement gives something concrete to validate real Questionnaire/QuestionnaireResponse/Composition instances against, systematically, rather than catching this class of bug only by manual screenshot review — which is literally how Defects 1/3/4 were found this session.
-- **Grounding for `docs/SPEC-10-ESUSHRUT-CAPABILITY-ASSESSMENT.md`'s competitive claims** — that spec's capability matrix is narrative/business-facing; a real CapabilityStatement doesn't replace it but gives its technical claims a machine-checkable backing instead of prose assertion.
+### 6.3 Value now
+A precise declaration of what the system supports, and something to validate real instances
+against systematically rather than by screenshot review.
 
 ### 6.4 Recommendation
+Author a `kind: requirements` statement listing Questionnaire, QuestionnaireResponse, Task,
+PlanDefinition, Composition, Organization, Practitioner, PractitionerRole, HealthcareService,
+Location, OrganizationAffiliation, Patient, Encounter, Observation, Condition, MedicationRequest,
+with `supportedProfile` pointing at the seven local StructureDefinitions. **Not built.**
 
-**Author it now, `kind: requirements` only**, as a companion artifact to this spec rather than a blocker on its build order (§7). A `capability`-kind statement would claim a running system implements what §2-§5 describe before any of it is built — inconsistent with this codebase's own documented discipline of not asserting what hasn't been verified. A `requirements` statement is honest about being a target, and it mostly formalizes what §2-§5 already declare in prose into FHIR's own conformance vocabulary — enumerable now: `Questionnaire`, `QuestionnaireResponse`, `Task`, `PlanDefinition`, `Composition`, `Organization`, `Practitioner`, `PractitionerRole`, `HealthcareService`, `Location`, `Observation`, `Condition`, `MedicationRequest`, `Patient`, `Encounter`. Revisit `kind: capability` once §7's build order has actually landed, and `kind: instance` only once M2/M3 pursuit is genuinely active (SPEC-11).
+### 6.5 StructureDefinitions
+The deferred "graph → StructureDefinition" item was delivered differently: SPEC-24 hand-authored
+seven profiles grounded in the ABDM specs, plus a validator. The dictionary and the profiles are
+separate artifacts; generating one from the other is not planned.
 
-### 6.5 A deeper thread this pulls on — real, but explicitly out of scope for this pass
+## 7. Related specs
 
-FHIR's formal mechanism for "which fields on which resource types are allowed/required, with what cardinality and bindings" is `StructureDefinition` (a profile). What the YAML compiler's allowed-shard-path graph (`yaml-to-questionnaire.js:92-110` — the same "graph of allowable elements" this whole design started from) does today is an informal, YAML-native version of that job, not real `StructureDefinition` resources. A fully rigorous `CapabilityStatement` would want its `rest.resource.profile`/`supportedProfile` fields pointing at real StructureDefinitions compiled from that graph — genuinely valuable, and a real follow-on capability, but a separate, larger compiler task (graph → StructureDefinition, alongside the existing graph → Questionnaire compilation) that shouldn't be bundled into this pass. Scope this pass's CapabilityStatement to declared resource types, interactions, and search parameters, without custom profiles; revisit §6.5 as its own future item.
+SPEC-12 (§4.6/§4.7 superseded here), SPEC-06 (the harness this loop gives something to dispatch
+against), SPEC-18 (authoring), SPEC-19 §9 (status mapping), SPEC-24 (profiles), SPEC-25
+(persistence).
 
-## 7. Relationship to existing specs
+## 8. Build order and state
 
-- `docs/SPEC-12-ROOMS-AND-BOUNDED-CONTEXT-SLOT-FILLING.md` — this spec revises §4.6 (room lifecycle → `Task.status`) and §4.7 (preconditions → `relatedAction`), and closes §8's specialty-parameterization open item. Everything else in SPEC-12 (§4.1-§4.4's live-view/bounded-context/modal-primitive/metrics design) is unchanged and is what Cübo operates within once a Task is active.
-- `docs/SPEC-06-CUBO-AGENTIC-HARNESS.md` — §2.3's closed loop is the concrete mechanism that gives that spec's "agentic harness" target something real to dispatch against; §3 here is the thread-model grounding for it.
-- `docs/SPEC-08-CUBO-BUILD-SEQUENCE.md` — the 12-specialty cluster this spec's §4.1 templates PlanDefinitions from; this spec's build order (§8) needs threading into that doc's phase table once work starts, not done yet.
-- `docs/SPEC-09-ABDM-ANCHORED-ONBOARDING-REBUILD.md` / `docs/SPEC-11-ABDM-M1-M4-ALIGNMENT.md` — `STAFF_FIELDS`/`HOSPITAL_FIELDS`, `HospitalOnboarding.vue`/`AbdmFieldForm.vue` are what §4's registration-as-authoring work extends; SPEC-11's M2/M3 deferral is what §6.2 grounds against.
-- `docs/SPEC-10-ESUSHRUT-CAPABILITY-ASSESSMENT.md` — §6.3's competitive-claims grounding.
+1. ~~Harden extraction~~: done (§5.3).
+2. ~~PlanDefinition compiler and runtime~~: done (§2), including invoke services and a real
+   change-password backend built for the auth closed loop.
+3. Task.status as room lifecycle (§2.2): mapping and persistence done (SPEC-25); no room uses it.
+4. `relatedAction` relationship semantics and `condition` evaluation (§2.1): not built.
+5. Registration-templated plans and credentialing Tasks (§4.1, §4.2): not built; §4.1 re-homed to
+   SPEC-23.
+6. Primary and supporting Tasks (§4.3): not built.
+7. ~~Composition assembly~~: done (§5.4); attestation and storage not built.
+8. CapabilityStatement (§6.4): not built.
 
-## 8. Build order
+## 9. Open questions
 
-Threads into SPEC-12's existing 7-step order at step 6-7 (rooms generalization / Cübo-as-central-interface) — none of this should precede SPEC-12's steps 1-5, and the stakes on getting those right are higher now, not lower, since mistakes propagate into the authorized record (§5), not just a public page.
-
-1. ~~Harden `local-extractor.js` (§5.3) — fix the silent-drop and identity-stability gaps.~~ **Done, test-verified** (`local-extractor.test.js`, 9 tests; full `clinuxflow-api` suite re-run clean at 152 tests). Practitioner identity resolution is real but scoped (name-based, not the originally-intended virtual-room anchor — see §5.3's revision); the `_setValueAtPath` field-collision bug §5.3 surfaced along the way was fixed in a later pass too — see §5.3's own UPDATE.
-2. ~~Build the `PlanDefinition`/`Task` compiler and runtime (§2)~~ — **Core runtime built and test-verified this session**, in `clinux-frontend/src/workflow/`: `planDefinitionRunner.js` compiles a real `PlanDefinition` into a `type: "parallel"` XState machine — one region per `action`, `relatedAction` becomes an `always`+`stateIn` guard gating `pending → ready` automatically the instant dependencies reach `done` (verified empirically against the real `xstate` package before writing the compiler, not assumed — including AND-gating for an action with multiple `relatedAction` entries). This is §2.3's "closed loop" made concrete: no separate re-evaluation step exists because `always` transitions already re-check on every state change. `workflowRuntime.js` is the orchestrator this session's design discussion settled on — one shared RxJS event bus, one central dispatcher, **no UI component ever calls an actor's `.send()` directly** (deliberately factory-based, not a module singleton, so tests don't bleed state). `data/collections/taskActorSnapshots.js` persists via the same `createLocalCollection` primitive every other collection in this app already uses; `actor.getPersistedSnapshot()`/`createActor(machine, {snapshot})` (verified this session to be plain, JSON-round-trip-safe) make an interrupted room genuinely resumable — proven with a real rehydration test, not just that a persist function gets called. Driven end to end against the real five-room shape (matches `workflow-definition-v1.draft.yaml`'s worked example): completing Facility Registration correctly unblocks both Provider Registration and Front Desk in one step. 13 new tests across 3 files in `clinux-frontend`, full suite clean at 112/112, build still clean.
-
-   **Deliberately not built in this pass, flagged not glossed over**: `relatedAction.relationship` isn't distinguished yet — every relationship value (`after-start`, `after-end`, ...) gates uniformly on the target reaching `done`; the semantic difference FHIR's own vocabulary implies (e.g. `after-start` arguably only needs `active`) isn't implemented. No UI wiring — `HospitalOnboardingChat.vue` still calls its own local machine directly (SPEC-15 §2's already-flagged gap), doesn't go through this runtime at all yet.
-
-   **Side effects — first real instance built, small and deliberate on purpose.** Rather than the five-room clinical case (still complex, still mid-build), a genuinely small, already-well-understood closed loop — user register → login → change_password — was picked specifically to validate the runtime's configuration for real. `clinux-frontend/src/workflow/authPlanDefinition.js` pairs a hand-authored 3-action `PlanDefinition` with `planDefinitionRunner.js`'s new `services` option: `active` now optionally `invoke`s a real async function (verified empirically against `xstate` before writing it: `fromPromise` + `onDone`/`onError`, not a synchronous action, since these are real network calls) instead of only waiting for a manual `COMPLETE`. `register`/`login` call real, already-existing `POST /api/auth/register`/`POST /api/auth/login`; **`change_password` needed a real backend built alongside this** — `PATCH /api/auth/change-password` (`clinuxflow-api/src/index.js`) and `AccountsDb.updatePasswordHash` didn't exist anywhere in this app before this pass, confirmed by grep, not assumed missing.
-
-   Found and fixed a real ordering bug doing this, not a hypothetical: `ready`'s `entry` action (originally meant to clear a stale error on arrival) ran *after* the failed-invoke transition's own action had just set that same error, silently wiping it — a plain state-diagram read wouldn't catch this, a failing test did. Fixed by moving the clear to `active`'s `entry` (a fresh attempt starting) instead of `ready`'s (which is also the error-transition's own target). `workflowRuntime.js`'s persistence also moved from "persist right after `.send()`" to `actor.subscribe()` — verified empirically that only the latter captures a `invoke`'s *asynchronous* resolution, which is exactly the case this slice exists to prove.
-
-   17 new tests (5 for the new API route, 12 for the runtime/machine changes and the auth loop itself, including 3 that genuinely failed first and caught the ordering bug above). Full suite clean: `clinux-frontend` 116/116, `clinuxflow-api` 171/171, both builds clean.
-
-   **"Subsequently trigger the next set of actions based on user type"(the follow-on this was explicitly building toward) — designed, not built.** `login`'s real result already carries `role` (`hospital_admin | health_professional | admin_and_health_professional`, SPEC-11). The mechanism: extend the condition-types `CodeSystem` (SPEC-18 §7 step 4 — the exact same catalog `specialty-equals` already lives in) with a `role-equals` concept; at the *dispatcher* level (not inside the machine, keeping it role-agnostic and reusable), subscribe specifically to `login` reaching `done`, read `role` from the invoke result, and call `registerPlan()` for whichever next PlanDefinition that role implies (Facility Registration for `hospital_admin`, Provider Registration for `health_professional`, both for `admin_and_health_professional`). This needs one genuinely new runtime capability that doesn't exist yet: "on THIS action completing, register a DIFFERENT plan" — `workflowRuntime.js` today only reacts to events for plans already registered, it has no cross-plan trigger mechanism. Real next step, not started.
-3. Wire `Task.status` as the room lifecycle (§2.2), replacing SPEC-12 §4.6's draft mechanism.
-4. Wire `relatedAction`/`condition`-based sequencing (§2.1), replacing SPEC-12 §4.7's ad hoc preconditions.
-5. Add the Hospital-registration PlanDefinition-authoring step (§4.1) and the Practitioner credentialing Task (§4.2) — both depend on (2).
-6. Add primary/supporting Task modeling (§4.3) — depends on (2) and (5)'s credentialing data existing.
-7. ~~Build Composition assembly (§5.4) on top of the now-hardened extractor (1) and §4.3's attester/author source data.~~ **Done, test-verified** — see §5.4's UPDATE. Real attestation (§4.3's attester source data, turning `'preliminary'` into `'final'`) and any HAPI-server connection remain open.
-8. Author the `requirements`-kind CapabilityStatement (§6.4) — can start in parallel with any of the above; it's declaration, not implementation, and mostly formalizes decisions already made in §2-§5.
-
-## 9. Open design questions
-
-- Whether `Questionnaire` is a valid `PlanDefinition.action.definitionCanonical` target in this system's specific FHIR version (§2) — not verified.
-- ~~Identity-resolution strategy for stable resource IDs across repeated extraction (§5.3)~~ — **resolved for Practitioner**, see §5.3's revision. Other resource types (`PractitionerRole` once it's a real separate block, `Location`, `HealthcareService`) still need their own resolvers designed when they actually need one.
-- ~~`_setValueAtPath`'s field-collision gap (§5.3) — only `component`/`coding` get positional array handling; any other pair of fields sharing one scalar FHIR path silently overwrite each other.~~ **Fixed**, along with a second, equally serious structural-validity bug found alongside it — see §5.3's UPDATE. Still genuinely open: `ContactPoint.system`/`Practitioner.extension.url` tagging (also named in that UPDATE).
-- Whether `Task.owner` and `Composition.attester` must coincide or may deliberately diverge for supported-role staffing (§4.4) — a product/clinical-governance decision, not a technical one.
-- Exact source of the older, unreconciled Hospital Profile capture surface (carried over from SPEC-12 §8, still open).
-- Whether `HealthcareService` needs the same automatic reference-linking treatment in `local-extractor.js` that `PractitionerRole`↔Organization already gets, once §4.2's `PractitionerRole.healthcareService` linkage is built.
-- The StructureDefinition-compilation follow-on named in §6.5 — real, deliberately deferred, not scheduled.
-- **New**: `relatedAction.relationship` isn't distinguished by the runtime built in §8 step 2 — every value gates uniformly on the target reaching `done`, not on the specific timing (`after-start`, `before-end`, etc.) FHIR's own vocabulary implies.
-- ~~side-effect wiring has no home yet~~ — **the mechanism exists now** (`invoke` on `active`, verified with a real closed loop — register/login/change-password). Extraction/Composition-assembly/owner-notification specifically still don't use it — that's still open, just no longer blocked on the mechanism existing.
-- **New**: cross-plan triggering — "on this action completing, register a *different* PlanDefinition" — doesn't exist. Needed for role-based next-action triggering (this session's design, not built) and, eventually, for any Task completion that should activate a different notebook (SPEC-16 §3).
-- **New**: `login`'s captured `role` isn't stored anywhere reusable yet — the invoke's result is only used to decide `done` vs. retry, not persisted into context the way `error_<actionId>` is. Needed before the role-based-triggering design above can actually be built.
-- **New**: no UI goes through the new runtime yet — `HospitalOnboardingChat.vue` still calls its own local machine directly, the exact anti-pattern §8 step 2's design discussion identified and was built to avoid; it just hasn't been reworked to route through `workflowRuntime.js` yet (tracked in SPEC-15 §2, unchanged by this session). The real `Index.vue` register/login forms are in the same position — `authPlanDefinition.js` is verified against a mocked auth store, not wired into the actual page yet.
+- Is `Questionnaire` a valid `action.definitionCanonical` target in R4 for this use? Not verified.
+- Identity resolvers for Location, HealthcareService and PractitionerRole.
+- `Task.owner` versus `Composition.attester` (§4.4).
+- `ContactPoint.system` (§5.3).
+- `relatedAction.relationship` semantics (§2).
+- Automatic reference linking for `HealthcareService` once credentialing links roles to services.
+- Resolved: side-effect wiring (`invoke`), cross-plan triggering (`onActionDone`), and capturing
+  the login result (`result_<actionId>`).

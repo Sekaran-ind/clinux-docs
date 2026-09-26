@@ -1,65 +1,135 @@
-## Blog 5: The Edge Computing Revolution in Healthcare
-Title: The Sovereign Clinic: Inside ClinuxFlow’s Distributed Nano Data Centre with Built-In Self-Healing
-Target Audience: Chief Information Officers (CIOs), Healthcare Infrastructure Architects, IT Operations Directors, Clinic Network Owners
-## Introduction
-When cloud outages hit the healthcare industry, patient care grinds to a halt. In a traditional centralized cloud setup, a dropped internet connection means a clinic can no longer register patients, parse voice dictations, or view critical medical imaging.
-ClinuxFlow eliminates this single point of failure. We have engineered a distributed, completely sovereign Nano Data Centre Architecture that runs entirely at the clinical edge. By splitting heavy computational workloads across a dedicated ecosystem of local hardware nodes, ClinuxFlow guarantees that your clinic can continue operating at full speed—even during a total regional internet blackout.
+# Sovereign Inference at the Clinic Edge: A Realistic Nano Data Centre
 
-                     ┌─────────────────── Isolated Local Network Switch ───────────────────┐
-                     │                                                                     │
-                     ▼                                                                     ▼
-         [ Proxmox Nano Cluster ]                                                  [ Apple Mac mini ]
-┌────────────────────────────────────────┐                                    ┌─────────────────────────┐
-│ • Traefik API Gateway (Dynamic Proxy)  │ ──► Health Check Active Failover ──►│ • MedGemma Audit Engine │
-│ • HAPI FHIR Server + Postgres (Patroni)│                                    │ • Local M4 Unified RAM  │
-│ • MedCAT Real-Time Voice NLP Pipeline  │                                    └─────────────────────────┘
-└────────────────────────────────────────┘                                                 │
-                     │                                                                     │
-                     └─────────────────────────────────┬───────────────────────────────────┘
-                                                       ▼
-                                              [ Windows PC Node ]
-                                        ┌─────────────────────────┐
-                                        │ • MedSAM Imaging Server │
-                                        │ • Local MinIO Storage   │
-                                        └─────────────────────────┘
+*Building Clinical Software That Deserves Trust, part 5*
 
-------------------------------
-## 1. Hardware Specialization: The Best-of-Breed Edge Matrix
-Instead of overloading a single machine, the Clinux Kernel partitions clinical operations across three specialized hardware environments connected via a physically isolated network switch:
+**For:** CIOs, infrastructure leads and founders considering running clinical AI models on
+hardware they own.
 
-* The Proxmox Core: A high-availability Linux cluster running Traefik as an API gateway, the HAPI FHIR server, a replicated Postgres database, and our lightning-fast MedCAT voice-parsing microservice.
-* The Apple Silicon Edge (Mac mini M4): Equipped with 24GB of Unified Memory, this node runs our quantized MedGemma model. Because Apple Silicon grants the GPU direct access to the entire memory pool, it processes clinical audit logs and complex structural validations locally, with zero cloud reliance.
-* The Visual Engine (Windows PC): Backed by an enterprise Nvidia GPU, this node hosts MedSAM (Medical Segment Anything Model) to handle compute-heavy image and tissue segmentation pipelines natively.
+---
 
-------------------------------
-## 2. Architectural Fault Tolerance: Isolating Blast Radiuses
-By distributing tasks across independent hardware nodes, ClinuxFlow minimizes the "blast radius" of any unexpected software crash:
+There are good reasons to run clinical models on your own hardware instead of a cloud API. There
+are also good reasons not to, and they are usually left out of the pitch. This post sets out both
+sides, then describes the small "nano data centre" we have designed for ClinuxFlow's enterprise
+tier: what it's for, what it runs, how it connects, and how it fails.
 
-* Compute Separation: If a doctor uploads a massive batch of heavy CT scans that completely maxes out the Nvidia GPU on the Windows PC, the core text-charting and voice-transcription lines running on the Proxmox and Mac mini nodes remain completely untouched.
-* Network Isolation via Traefik: The Traefik gateway acts as the single point of contact for the ClinuxFlow app. It abstracts the physical hardware by routing requests internally based on static IP pools. If an external attacker compromises a device on the clinic's public Wi-Fi, Traefik's strict internal routing rules and Mutual TLS (mTLS) credentials block them from ever discovering or communicating with your clinical servers.
+It replaces an earlier draft that promised a self-healing cluster "structurally impossible to take
+offline", with automatic database failover and a voice pipeline. None of that was built, and the
+honest version is more useful.
 
-------------------------------
-## 3. Self-Healing Mechanics: Autonomous Recovery at the Edge
-The Clinux Kernel does not require an IT administrator on-site to handle system errors. It relies on a three-tier automated self-healing framework designed to recover from hardware or software failures instantly:
-## A. Dynamic Failover via Patroni and Postgres Replication
-Database corruption or a single hard-drive failure cannot be allowed to destroy patient data. ClinuxFlow deploys Postgres using Patroni for automated high-availability clustering. If the master Postgres node suffers a hardware failure, the system automatically detects the dropped heartbeats, triggers a safe election, and promotes the replicated secondary node to master in under 5 seconds—ensuring clinicians never experience data loss during an encounter.
-## B. Automated Container Remediation via Proxmox and Docker
-All microservices (like Traefik and MedCAT) are monitored via automated health-check endpoints. If the MedCAT socket experiences a memory leak during a long shift, Proxmox’s orchestration layer flags the unhealthy state, kills the non-responsive container, and spins up a fresh instance automatically. The gateway seamlessly buffers incoming requests during the reboot, presenting zero downtime to the end-user.
-## C. Model Recovery Loops for MedGemma and MedSAM
-Running AI models at the edge can occasionally result in out-of-memory errors due to erratic context lengths. On the Mac mini and Windows PC, we implement localized process supervisors (such as PM2 or systemd watchdogs). If MedGemma or MedSAM crashes mid-inference:
+## Why run models on owned hardware
 
-   1. The supervisor immediately recycles the model process.
-   2. Traefik automatically drops the current broken socket path.
-   3. The Clinux Kernel client transparently resubmits the queued data bundle for auditing once the model confirms a healthy status check.
+**Data residency and exposure.** A consultation transcript sent to a third-party API is a
+transfer of sensitive personal data, with contracts, retention questions and a lawful-basis
+obligation under India's DPDP Act. Inference on hardware the clinic group controls removes the
+third party.
 
-------------------------------
-## Conclusion
-True data sovereignty requires infrastructure that can protect itself. By matching specialized, cost-effective consumer and enterprise hardware (Proxmox, Apple Silicon, and Nvidia Windows systems) with autonomous self-healing software, ClinuxFlow removes the vulnerability of cloud dependence. We deliver an enterprise-grade clinical environment that is incredibly fast, completely secure, and structurally impossible to take offline.
-------------------------------
-## Advancing the Launch Strategy
-To help align this infrastructure architecture with your broader launch plans, let me know if you would like me to:
+**The models you need may not be hosted.** Google's MedGemma (medical text and image models) and
+MedSAM (medical image segmentation) are open-weight models built for medical use. Neither is in
+the serverless catalog our cloud API runs on, and both need GPU-class memory.
 
-* Draft a technical hardware configuration manifest detailing the explicit network subnets and ports required to link Traefik to your Mac mini and Windows environments safely.
-* Propose specific stress-test protocols (such as simulation drills for split-brain database scenarios or network disconnects) to validate your cluster's self-healing capabilities before deploying it in a live clinic.
+**Predictable cost.** Per-token pricing makes heavy use expensive and hard to budget. Owned
+hardware is a fixed cost, which suits a clinic group better than a variable bill.
 
+**Latency and connectivity.** Inference on the local network works when the internet doesn't.
 
+## Why not
+
+- **You are now an operator.** Patching, monitoring, backups, spares and on-call are your job.
+- **Power and environment.** Voltage fluctuation, outages, heat and dust are ordinary in many
+  Indian clinics. Hardware needs a UPS sized for a clean shutdown, surge protection and airflow.
+- **Physical security.** A box in a back room holding clinical data can be carried out of the
+  door. Disks must be encrypted.
+- **Capacity doesn't stretch.** A GPU serves a fixed number of requests at a time. Ten clinics
+  sharing one machine will queue.
+- **Model governance is on you.** Which version is running, whether its licence permits your use,
+  whether it was evaluated before an upgrade, and how to roll back.
+
+If these costs aren't worth it for a given customer, the cloud path stays. That's why this is an
+opt-in enterprise tier, not the default.
+
+## The design
+
+### Hardware
+
+| Node | Role | Notes |
+|---|---|---|
+| Mac mini, 24 GB unified memory | Clinical text models (MedGemma) | Unified memory lets the GPU use most of RAM. The 4B model fits comfortably at 8-bit; the 27B model at 4-bit is tight once you add context cache, so measure before promising |
+| Five single-board computers under Proxmox | CPU-bound clinical NLP (entity extraction, section detection, negation) | Cheap, low power, easy to replace; not for large models |
+| Windows PC with an NVIDIA GPU | Imaging models (MedSAM) | Isolated so heavy imaging jobs can't starve text inference |
+
+Splitting by workload means a burst of image segmentation cannot slow down note drafting, and a
+failed node takes out one capability, not all of them.
+
+### Connectivity: no open ports
+
+The cluster sits on its own switch with no public IP. It reaches the outside world through a
+**Cloudflare Tunnel**: a small agent inside the network makes an outbound connection to
+Cloudflare, and requests come back down that connection. No inbound firewall ports are opened.
+Access through the tunnel is restricted to our API using service credentials.
+
+### A dedicated gateway
+
+Our cloud API doesn't talk to the models directly. A separate gateway service is the only thing
+holding credentials for the nano data centre. It translates our request format into each model
+server's own, applies timeouts and a queue, and logs access. It follows the same pattern we use
+for the national health registries (part 8). This gateway is designed but not yet written.
+
+### Scheduling
+
+Requests fall into two classes: **interactive** (a clinician waiting for a draft) and **batch**
+(re-processing documents overnight). Interactive requests jump the queue; batch fills idle time.
+When several clinics share one cluster, each gets a fair share, so one busy clinic can't lock out
+the others. This must be designed before a second clinic is added, not after the first complaint.
+
+### Failure is normal, so plan for it
+
+The earlier draft of this post claimed the system could not be taken offline. Every system can.
+What matters is what happens when it is:
+
+1. **Clinical work never waits on AI.** If the nano data centre is unreachable, every screen still
+   works; AI suggestions are simply absent, and the UI says so. This is the most important design
+   rule in this post.
+2. **Processes restart themselves.** Model servers run under the operating system's service
+   supervisor (systemd on Linux, launchd on macOS) with health checks, so a crash from running out
+   of memory on a long input becomes a restart, not an outage.
+3. **Requests time out and fail loudly.** A request that doesn't finish in its budget returns an
+   error the app can show, rather than hanging.
+4. **Nothing clinical is stored only on the cluster.** The models are stateless; records live in
+   the app's own storage tiers (part 3), so losing a node loses no patient data.
+
+### Data handling
+
+- Traffic carries clinical text and images, so it is encrypted in transit end to end.
+- Prompts and outputs are not logged by default. Access is logged: who, when, which model, how long.
+- Retention on the cluster is measured in minutes, not months.
+- Disks are encrypted at rest, and the machines sit in a locked space.
+
+### Model governance
+
+- Models are pinned by exact version and file hash; nothing auto-updates.
+- Each model's licence is reviewed for clinical use (MedGemma is distributed under Google's Health
+  AI Developer Foundations terms, which have conditions of their own).
+- A model upgrade runs the same evaluation set as a code change (part 2), and a rollback is one
+  configuration change.
+
+### Commercial shape
+
+Shared (several clinics on one central cluster) or dedicated (a clinic's own cluster) is the same
+software with a different endpoint per clinic. Which a customer gets is a pricing decision. Shared
+mode is only offered once the scheduling above exists.
+
+## Questions to ask any vendor selling on-premises clinical AI
+
+1. What happens to clinical work when the AI box is off?
+2. Which exact model versions run, and how are upgrades evaluated and rolled back?
+3. What is logged, and for how long?
+4. Who patches it, and how quickly?
+5. What's the UPS runtime, and does the hardware shut down cleanly?
+6. What throughput do you measure for our workload, not a benchmark?
+
+## Where ClinuxFlow is today
+
+The hardware exists. The design above is written down. Nothing is deployed: no tunnel, no gateway,
+no scheduling, and no enterprise-tier switch in the product. This is the last item on our AI
+roadmap, deliberately, because the rules in parts 2 and 4 have to be met first. The next post looks
+at the conversational workspace these models would eventually sit behind.
